@@ -11,25 +11,26 @@ from shapely.ops import cascaded_union
 import math
 
 class_index = {
-    'card': 1,
-    'dob': 2,
-    'rxgroup': 3,
-    'plan': 4,
-    'health_plan': 5,
-    'mem_name': 6,
-    'payer_id': 7,
-    'dependents': 8,
-    'mem_id': 9,
-    'effective': 10,
-    'coverage': 11,
-    'subcriber_id': 12,
-    'pcp': 13,
-    'service_type': 14,
-    'provider_name': 15,
-    'rxbin': 16,
-    'group_number': 17,
-    'rxpcn': 18,
-    'issuer': 19,
+    "PROVIDER_NAME": 1,
+    "MEM_NAME": 2,
+    "MEM_ID": 3,
+    "GROUP_NUMBER": 4,
+    "RXBIN": 5,
+    "RXPCN": 6,
+    "ISSUER_ID": 7,
+    "RXGROUP": 8,
+    "EFFECTIVE": 9,
+    "DEPENDENTS": 10,
+    "HEALTH_PLAN": 11,
+    "DOB": 12,
+    "PAYER_ID": 13,
+    "COVERAGE_DATE": 14,
+    "SUBCRIBER_ID": 15,
+    "PCP": 16,
+    "RXID": 17,
+    "SUBSCRIBER_NAME": 19,
+    "RX_PLAN": 20,
+    "POLICY_NUMBER": 21,
 }
 
 
@@ -104,7 +105,7 @@ def merge_boxes(box1, box2):
     ]
 
 
-def converting_ubiai(data, write_file, labelss):
+def converting_ubiai(data, write_file):
     final = []
     for line in data:
         name = line['documentName'].split('.jpg_')[0]
@@ -123,6 +124,7 @@ def converting_ubiai(data, write_file, labelss):
                 for item in bboxs:
                     label = item['label']
                     if label not in ["NETWORK", "OUT_OF_POCKET", "RX_PLAN", "PEDIATRIC_MEMBER_DENTAL", "PLAN_CODE"]:
+                        label = class_index[label]
                         for box in item['boundingBoxes']:
                             bbox = box['normalizedVertices']
                             text = box['word']
@@ -191,6 +193,6 @@ if __name__ == '__main__':
     data = json.load(open(file, 'r'))
     list_class = open('./train_data/wildreceipt/class_list.txt', 'r').readlines()
     with open(f'./train_data/wildreceipt/closeset_train.txt', 'w', encoding='utf-8') as f:
-        converting_ubiai(data, f, list_class)
+        converting_ubiai(data, f)
     # slipt_wildreceipt()
     # get_class_list()
