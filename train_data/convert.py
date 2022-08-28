@@ -109,7 +109,13 @@ def converting_ubiai(data, write_file, labelss):
     for line in data:
         name = line['documentName'].split('.jpg_')[0]
         if line['annotation']:
-            line_result = [f'images_files/{name}.jpg', []]
+            name = f'images_files/{name}.jpg'
+            new_data = {
+                'file_name': name,
+                'height': line['tokens'][0]['height'],
+                'width': line['tokens'][0]['width'],
+                'annotations': []
+            }
             bboxs = line['annotation']
             seen = set()
             if bboxs:
@@ -128,17 +134,17 @@ def converting_ubiai(data, write_file, labelss):
                                 seen.add(label)
                                 for boxes in item['boundingBoxes']:
                                     bbox = boxes['normalizedVertices']
-                                    bbox = get_bbox(bbox)
+                                    bbox = get_bbox_from_array(bbox)
                             bbox_dict[label] = [text, bbox]
                 for k, v in bbox_dict.items():
                     labels = {
+                        'box': v[1],
+                        'text': v[0],
                         'label': k,
-                        'transcription': v[0],
-                        'points': v[1],
                     }
-                    line_result[1].append(labels)
-                print(line_result)
-                final.append(json.dumps(line_result))
+                    new_data["annotations"].append(labels)
+                print(new_data)
+                final.append(json.dumps(new_data))
     write_file.writelines(line for line in final)
 
 
