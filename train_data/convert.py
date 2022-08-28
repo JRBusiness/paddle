@@ -11,7 +11,7 @@ from shapely.ops import cascaded_union
 import math
 
 class_index = {
-    "PROVIDER_NAME": 1,
+    "PROVIDER_NAME": 0,
     "MEM_NAME": 2,
     "MEM_ID": 3,
     "GROUP_NUMBER": 4,
@@ -30,7 +30,7 @@ class_index = {
     "RXID": 17,
     "SUBSCRIBER_NAME": 19,
     "RX_PLAN": 20,
-    "POLICY_NUMBER": 21,
+    "POLICY_NUMBER": 1,
 }
 
 
@@ -71,8 +71,8 @@ def converting_hasty(data, write_file):
 def get_bbox(bbox):
     list_items = []
     for bb in bbox:
-        # for i in ["x", "y"]:
-        list_items.append([bb["x"], bb["y"]])
+        for i in ["x", "y"]:
+            list_items.append([bb["x"], bb["y"]])
     return list_items
 
 
@@ -98,10 +98,10 @@ def get_bbox_from_bbox(bbox):
 
 def merge_boxes(box1, box2):
     return [
-        box1[0], box2[0],
-        box1[1], box2[1],
-        box1[2], box2[2],
-        box1[3], box2[3]
+        [box1[0], box2[0]],
+        [box1[1], box2[1]],
+        [box1[2], box2[2]],
+        [box1[3], box2[3]],
     ]
 
 def converting_ubiai2(data, write_file):
@@ -117,12 +117,14 @@ def converting_ubiai2(data, write_file):
                 for item in bboxs:
                     label = item['label']
                     if label not in ["NETWORK", "OUT_OF_POCKET", "RX_PLAN", "PEDIATRIC_MEMBER_DENTAL", "PLAN_CODE"]:
+                        label = class_index[label]
                         for box in item['boundingBoxes']:
                             bbox = box['normalizedVertices']
                             text = box['word']
                             if label in seen:
                                 bbox_new = get_bbox_from_array(bbox)
-                                bbox = merge_boxes(bbox_dict[label][1], bbox_new)
+                                old_box = get_bbox_from_bbox(bbox_dict[label][1])
+                                bbox = merge_boxes(old_box, bbox_new)
                                 text = " ".join([bbox_dict[label][0], text])
                             if label not in seen:
                                 seen.add(label)
@@ -134,8 +136,7 @@ def converting_ubiai2(data, write_file):
                     labels = {
                         'transcription': v[0],
                         'label': k,
-                        'points': v[1],
-                        "id":
+                        'points': v[1]
                     }
                     line_result[1].append(labels)
                 print(line_result)
@@ -230,7 +231,7 @@ if __name__ == '__main__':
     file = './train_data/wildreceipt/annotate.json'
     data = json.load(open(file, 'r'))
     list_class = open('./train_data/wildreceipt/class_list.txt', 'r').readlines()
-    with open(f'./train_data/wildreceipt/closeset_train.txt', 'w', encoding='utf-8') as f:
-        converting_ubiai(data, f)
+    with open(f'./train_data/wildreceipt/closeset_train2.txt', 'w', encoding='utf-8') as f:
+        converting_ubiai2(data, f)
     # slipt_wildreceipt()
     # get_class_list()
