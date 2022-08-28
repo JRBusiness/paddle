@@ -104,6 +104,44 @@ def merge_boxes(box1, box2):
         box1[3], box2[3]
     ]
 
+def converting_ubiai2(data, write_file):
+    final = []
+    for line in data:
+        name = line['documentName'].split('.jpg_')[0]
+        if line['annotation']:
+            line_result = [f'images_files/{name}.jpg', []]
+            bboxs = line['annotation']
+            seen = set()
+            if bboxs:
+                bbox_dict = {}
+                for item in bboxs:
+                    label = item['label']
+                    if label not in ["NETWORK", "OUT_OF_POCKET", "RX_PLAN", "PEDIATRIC_MEMBER_DENTAL", "PLAN_CODE"]:
+                        for box in item['boundingBoxes']:
+                            bbox = box['normalizedVertices']
+                            text = box['word']
+                            if label in seen:
+                                bbox_new = get_bbox_from_array(bbox)
+                                bbox = merge_boxes(bbox_dict[label][1], bbox_new)
+                                text = " ".join([bbox_dict[label][0], text])
+                            if label not in seen:
+                                seen.add(label)
+                                for boxes in item['boundingBoxes']:
+                                    bbox = boxes['normalizedVertices']
+                                    bbox = get_bbox(bbox)
+                            bbox_dict[label] = [text, bbox]
+                for k, v in bbox_dict.items():
+                    labels = {
+                        'transcription': v[0],
+                        'label': k,
+                        'points': v[1],
+                        "id":
+                    }
+                    line_result[1].append(labels)
+                print(line_result)
+                final.append(json.dumps(line_result))
+    write_file.writelines(line for line in final)
+
 
 def converting_ubiai(data, write_file):
     final = []
