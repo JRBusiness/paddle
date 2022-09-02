@@ -455,19 +455,6 @@ A：以检测中的resnet骨干网络为例，图像输入网络之后，需要�
 
 A：可以在命令中加入 --det_db_unclip_ratio ，参数定义位置，这个参数是检测后处理时控制文本框大小的，默认1.6，可以尝试改成2.5或者更大，反之，如果觉得文本框不够紧凑，也可以把该参数调小。
 
-#### Q：PP-OCR文本检测出现明显漏检，该如何调整参数或者训练。
-
-A：以[#issue5851](https://github.com/PaddlePaddle/PaddleOCR/issues/5815)为例，文字出现漏检时，先分析问题原因。
-首先，在[后处理处](https://github.com/PaddlePaddle/PaddleOCR/blob/767fad23a2b217f775f3c32314ab8b781966671c/ppocr/postprocess/db_postprocess.py#L177)添加如下代码，可视化模型对文字的分割区域：
-```
-import cv2
-im = np.array(segmentation[0]*255).astype(np.uint8)
-cv2.imwrite("db_seg_vis.jpg", im)
-```
-如果模型在漏检文字区域有分割区域，但是没有生成框，此类情况多为文字太小，文字弯曲，或者某一行开头的文字过大等等。可减小DB后处理参数[det_db_thresh](https://github.com/PaddlePaddle/PaddleOCR/blob/767fad23a2b217f775f3c32314ab8b781966671c/tools/infer/utility.py#L52)和[det_db_box_thresh](https://github.com/PaddlePaddle/PaddleOCR/blob/767fad23a2b217f775f3c32314ab8b781966671c/tools/infer/utility.py#L53)，或者设置[use_dilation](https://github.com/PaddlePaddle/PaddleOCR/blob/767fad23a2b217f775f3c32314ab8b781966671c/tools/infer/utility.py#L56)为True扩大文字分割区域。
-如果模型在漏检文字区域没有分割区域，是模型对此类数据没有训练好，建议用PP-OCR的模型在你的数据场景上finetune。
-
-
 <a name="27"></a>
 
 ### 2.7 模型结构
@@ -695,7 +682,7 @@ lr:
 
 #### Q: 关于dygraph分支中，文本识别模型训练，要使用数据增强应该如何设置？
 
-**A**：可以参考[配置文件](../../configs/rec/ch_ppocr_v2.0/rec_chinese_lite_train_v2.0.yml)在Train['dataset']['transforms']添加RecAug字段，使数据增强生效。可以通过添加对aug_prob设置，表示每种数据增强采用的概率。aug_prob默认是0.4.由于tia数据增强特殊性，默认不采用，可以通过添加use_tia设置，使tia数据增强生效。详细设置可以参考[ISSUE 1744](https://github.com/PaddlePaddle/PaddleOCR/issues/1744)。
+**A**：可以参考[配置文件](../../configs/rec/ch_ppocr_v2.0/rec_chinese_lite_train_v2.0.yml)在Train['dataset']['transforms']添加RecAug字段，使数据增强生效。可以通过添加对aug_prob设置，表示每种数据增强采用的概率。aug_prob默认是0.4。详细设置可以参考[ISSUE 1744](https://github.com/PaddlePaddle/PaddleOCR/issues/1744)。
 
 #### Q: 训练过程中，训练程序意外退出/挂起，应该如何解决？
 
@@ -732,6 +719,13 @@ C++TensorRT预测需要使用支持TRT的预测库并在编译时打开[-DWITH_T
 如果想修改其他分支代码支持TensorRT预测，可以参考[PR](https://github.com/PaddlePaddle/PaddleOCR/pull/2921)。
 
 注：建议使用TensorRT大于等于6.1.0.5以上的版本。
+
+#### Q: 为什么识别模型做预测的时候，预测图片的数量数量还会影响预测的精度
+**A**： 推理时识别模型默认的batch_size=6, 如预测图片长度变化大，可能影响预测效果。如果出现上述问题可在推理的时候设置识别bs=1，命令如下：
+
+```
+python3 tools/infer/predict_rec.py --image_dir="./doc/imgs_words/ch/word_4.jpg" --rec_model_dir="./ch_PP-OCRv3_rec_infer/" --rec_batch_num=1
+```
 
 <a name="213"></a>
 
@@ -852,15 +846,3 @@ nvidia-smi --lock-gpu-clocks=1590 -i 0
 #### Q: 预测时显存爆炸、内存泄漏问题？
 
 **A**: 打开显存/内存优化开关`enable_memory_optim`可以解决该问题，相关代码已合入，[查看详情](https://github.com/PaddlePaddle/PaddleOCR/blob/release/2.1/tools/infer/utility.py#L153)。
-
-
-#### Q: TRT预测报错：InvalidArgumentError: some trt inputs dynamic shape info not set, check the INFO log above for more details.
-
-**A**: PP-OCR的模型采用动态shape预测，因为TRT子图划分问题，需要设置额外参数的shape；
-首先，屏蔽此行代码[config.disable_glog_info()](https://github.com/PaddlePaddle/PaddleOCR/blob/767fad23a2b217f775f3c32314ab8b781966671c/tools/infer/utility.py#L306)输出日志，重新预测，根据报错信息中的提示设置某些参数的动态shape。
-假设报错信息中： 
-trt input [lstm_1.tmp_0] dynamic shape info not set, please check and retry.
-
-可以参考[检测模型里设置动态shape的方式](https://github.com/PaddlePaddle/PaddleOCR/blob/8de06d2370e81e0ee1473d17925fb2e05295a0fe/tools/infer/utility.py#L268-L270)设置lstm_1.tmp_0的动态shape，识别模型的动态shape在[这里](https://github.com/PaddlePaddle/PaddleOCR/blob/8de06d2370e81e0ee1473d17925fb2e05295a0fe/tools/infer/utility.py#L275-L277)；
-
-如果不清楚lstm_1.tmp_0的shape是多少，可以把inference.pdmodel 放在网页 https://netron.app/ 里可视化，搜索lstm_1.tmp_0 查看该参数的shape信息。

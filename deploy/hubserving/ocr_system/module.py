@@ -29,9 +29,9 @@ import cv2
 import numpy as np
 import paddlehub as hub
 
-from server.shared.helpers.tools.infer.utility import base64_to_cv2
-from server.shared.helpers.tools.infer.predict_system import TextSystem
-from server.shared.helpers.tools.infer.utility import parse_args
+from tools.infer.utility import base64_to_cv2
+from tools.infer.predict_system import TextSystem
+from tools.infer.utility import parse_args
 from deploy.hubserving.ocr_system.params import read_params
 
 
@@ -118,7 +118,7 @@ class OCRSystem(hub.Module):
                 all_results.append([])
                 continue
             starttime = time.time()
-            dt_boxes, rec_res = self.text_sys(img)
+            dt_boxes, rec_res, _ = self.text_sys(img)
             elapse = time.time() - starttime
             logger.info("Predict time: {}".format(elapse))
 

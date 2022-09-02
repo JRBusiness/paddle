@@ -16,6 +16,7 @@ from rapidfuzz.distance import Levenshtein
 import string
 
 
+
 class RecMetric(object):
     def __init__(self,
                  main_indicator='acc',

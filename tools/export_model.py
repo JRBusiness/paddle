@@ -80,6 +80,69 @@ def export_single_model(model,
                 shape=[None, 3, 64, 512], dtype="float32"),
         ]
         model = to_static(model, input_spec=other_shape)
+    elif arch_config["model_type"] == "sr":
+        other_shape = [
+            paddle.static.InputSpec(
+                shape=[None, 3, 16, 64], dtype="float32")
+        ]
+        model = to_static(model, input_spec=other_shape)
+    elif arch_config["algorithm"] == "ViTSTR":
+        other_shape = [
+            paddle.static.InputSpec(
+                shape=[None, 1, 224, 224], dtype="float32"),
+        ]
+        model = to_static(model, input_spec=other_shape)
+    elif arch_config["algorithm"] == "ABINet":
+        other_shape = [
+            paddle.static.InputSpec(
+                shape=[None, 3, 32, 128], dtype="float32"),
+        ]
+        # print([None, 3, 32, 128])
+        model = to_static(model, input_spec=other_shape)
+    elif arch_config["algorithm"] in ["NRTR", "SPIN"]:
+        other_shape = [
+            paddle.static.InputSpec(
+                shape=[None, 1, 32, 100], dtype="float32"),
+        ]
+        model = to_static(model, input_spec=other_shape)
+    elif arch_config["algorithm"] == "VisionLAN":
+        other_shape = [
+            paddle.static.InputSpec(
+                shape=[None, 3, 64, 256], dtype="float32"),
+        ]
+        model = to_static(model, input_spec=other_shape)
+    elif arch_config["algorithm"] == "RobustScanner":
+        max_text_length = arch_config["Head"]["max_text_length"]
+        other_shape = [
+            paddle.static.InputSpec(
+                shape=[None, 3, 48, 160], dtype="float32"),
+
+            [
+            paddle.static.InputSpec(
+                    shape=[None, ], 
+                    dtype="float32"),
+            paddle.static.InputSpec(
+                    shape=[None, max_text_length], 
+                    dtype="int64")
+            ]
+        ]
+        model = to_static(model, input_spec=other_shape)
+    elif arch_config["algorithm"] in ["LayoutLM", "LayoutLMv2", "LayoutXLM"]:
+        input_spec = [
+            paddle.static.InputSpec(
+                shape=[None, 512], dtype="int64"),  # input_ids
+            paddle.static.InputSpec(
+                shape=[None, 512, 4], dtype="int64"),  # bbox
+            paddle.static.InputSpec(
+                shape=[None, 512], dtype="int64"),  # attention_mask
+            paddle.static.InputSpec(
+                shape=[None, 512], dtype="int64"),  # token_type_ids
+            paddle.static.InputSpec(
+                shape=[None, 3, 224, 224], dtype="int64"),  # image
+        ]
+        if model.backbone.use_visual_backbone is False:
+            input_spec.pop(4)
+        model = to_static(model, input_spec=[input_spec])
     else:
         infer_shape = [3, -1, -1]
         if arch_config["model_type"] == "rec":
@@ -91,10 +154,12 @@ def export_single_model(model,
                     "When there is tps in the network, variable length input is not supported, and the input size needs to be the same as during training"
                 )
                 infer_shape[-1] = 100
-            if arch_config["algorithm"] == "NRTR":
-                infer_shape = [1, 32, 100]
         elif arch_config["model_type"] == "table":
             infer_shape = [3, 488, 488]
+            if arch_config["algorithm"] == "TableMaster":
+                infer_shape = [3, 480, 480]
+            if arch_config["algorithm"] == "SLANet":
+                infer_shape = [3, -1, -1]
         model = to_static(
             model,
             input_spec=[
@@ -156,8 +221,11 @@ def main():
         else:  # base rec model
             config["Architecture"]["Head"]["out_channels"] = char_num
 
+    # for sr algorithm
+    if config["Architecture"]["model_type"] == "sr":
+        config['Architecture']["Transform"]['infer_mode'] = True
     model = build_model(config["Architecture"])
-    load_model(config, model)
+    load_model(config, model, model_type=config['Architecture']["model_type"])
     model.eval()
 
     save_path = config["Global"]["save_inference_dir"]

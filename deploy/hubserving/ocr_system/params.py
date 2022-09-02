@@ -26,7 +26,7 @@ def read_params():
 
     #params for text detector
     cfg.det_algorithm = "DB"
-    cfg.det_model_dir = "server/shared/helpers/models/detection"
+    cfg.det_model_dir = "./inference/ch_PP-OCRv3_det_infer/"
     cfg.det_limit_side_len = 960
     cfg.det_limit_type = 'max'
 
@@ -44,18 +44,18 @@ def read_params():
 
     #params for text recognizer
     cfg.rec_algorithm = "CRNN"
-    cfg.rec_model_dir = "server/shared/helpers/models/regconition"
+    cfg.rec_model_dir = "./inference/ch_PP-OCRv3_rec_infer/"
 
     cfg.rec_image_shape = "3, 48, 320"
     cfg.rec_batch_num = 6
     cfg.max_text_length = 25
 
-    cfg.rec_char_dict_path = "server/shared/helpers/kie/dict.txt"
+    cfg.rec_char_dict_path = "./ppocr/utils/ppocr_keys_v1.txt"
     cfg.use_space_char = True
 
     #params for text classifier
     cfg.use_angle_cls = True
-    cfg.cls_model_dir = "server/shared/helpers/models/angle"
+    cfg.cls_model_dir = "./inference/ch_ppocr_mobile_v2.0_cls_infer/"
     cfg.cls_image_shape = "3, 48, 192"
     cfg.label_list = ['0', '180']
     cfg.cls_batch_num = 30

@@ -29,7 +29,7 @@ import cv2
 import numpy as np
 import paddlehub as hub
 
-from server.shared.helpers.tools.infer.utility import base64_to_cv2
+from tools.infer.utility import base64_to_cv2
 from ppstructure.table.predict_table import TableSystem as _TableSystem
 from ppstructure.predict_system import save_structure_res
 from ppstructure.utility import parse_args
@@ -118,11 +118,11 @@ class TableSystem(hub.Module):
                 all_results.append([])
                 continue
             starttime = time.time()
-            pred_html = self.table_sys(img)
+            res, _ = self.table_sys(img)
             elapse = time.time() - starttime
             logger.info("Predict time: {}".format(elapse))
 
-            all_results.append({'html': pred_html})
+            all_results.append({'html': res['html']})
         return all_results
 
     @serving
@@ -138,6 +138,6 @@ class TableSystem(hub.Module):
 if __name__ == '__main__':
     table_system = TableSystem()
     table_system._initialize()
-    image_path = ['./doc/table/table.jpg']
+    image_path = ['./ppstructure/docs/table/table.jpg']
     res = table_system.predict(paths=image_path)
     print(res)

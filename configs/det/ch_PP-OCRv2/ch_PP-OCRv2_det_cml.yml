@@ -14,6 +14,9 @@ Global:
   use_visualdl: False
   infer_img: doc/imgs_en/img_10.jpg
   save_res_path: ./output/det_db/predicts_db.txt
+  use_amp: False
+  amp_level: O2
+  amp_custom_black_list: ['exp']
 
 Architecture:
   name: DistillationModel
@@ -28,7 +31,7 @@ Architecture:
       algorithm: DB
       Transform:
       Backbone:
-        name: ResNet
+        name: ResNet_vd
         layers: 18
       Neck:
         name: DBFPN
@@ -91,14 +94,11 @@ Loss:
       - ["Student", "Student2"]
       maps_name: "thrink_maps"
       weight: 1.0
-      # act: None
       model_name_pairs: ["Student", "Student2"]
       key: maps
   - DistillationDBLoss:
       weight: 1.0
       model_name_list: ["Student", "Student2"]
-      # key: maps
-      # name: DBLoss
       balance_loss: true
       main_loss_type: DiceLoss
       alpha: 5
@@ -188,7 +188,6 @@ Eval:
           channel_first: False
       - DetLabelEncode: # Class handling label
       - DetResizeForTest:
-#           image_shape: [736, 1280]
       - NormalizeImage:
           scale: 1./255.
           mean: [0.485, 0.456, 0.406]

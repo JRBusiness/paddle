@@ -20,10 +20,10 @@ PaddleOCR scene application covers general, manufacturing, finance, transportati
 
 ### General
 
-| Case                                           | Feature          | Model Download       | Tutorial                                |
-| ---------------------------------------------- | ---------------- | -------------------- | --------------------------------------- |
-| High-precision Chineses recognition model SVTR | New model        | [Model Download](#2) | [中文](./高精度中文识别模型.md)/English |
-| Chinese handwriting recognition                | New font support |                      |                                         |
+| Case                                           | Feature          | Model Download       | Tutorial                                | Example                                                      |
+| ---------------------------------------------- | ---------------- | -------------------- | --------------------------------------- | ------------------------------------------------------------ |
+| High-precision Chineses recognition model SVTR | New model        | [Model Download](#2) | [中文](./高精度中文识别模型.md)/English | <img src="../doc/ppocr_v3/svtr_tiny.png" width=200>          |
+| Chinese handwriting recognition                | New font support | [Model Download](#2) | [中文](./手写文字识别.md)/English       | <img src="https://ai-studio-static-online.cdn.bcebos.com/7a8865b2836f42d382e7c3fdaedc4d307d797fa2bcd0466e9f8b7705efff5a7b"  width = "200" height = "100" /> |
 
 <a name="12"></a>
 
@@ -42,14 +42,14 @@ PaddleOCR scene application covers general, manufacturing, finance, transportati
 
 ### Finance
 
-| Case                                | Feature                                       | Model Download       | Tutorial                            | Example                                                      |
-| ----------------------------------- | --------------------------------------------- | -------------------- | ----------------------------------- | ------------------------------------------------------------ |
-| Form visual question and answer     | Multimodal general form structured extraction | [Model Download](#2) | [中文](./多模态表单识别.md)/English | <img src="https://ai-studio-static-online.cdn.bcebos.com/a3b25766f3074d2facdf88d4a60fc76612f51992fd124cf5bd846b213130665b"  width = "200" height = "200" /> |
-| VAT invoice                         | coming soon                                   |                      |                                     |                                                              |
-| Seal detection and recognition      | End-to-end curved text recognition            |                      |                                     |                                                              |
-| Universal card recognition          | Universal structured extraction               |                      |                                     |                                                              |
-| ID card recognition                 | Structured extraction, image shading          |                      |                                     |                                                              |
-| Contract key information extraction | Dense text detection, NLP concatenation       |                      |                                     |                                                              |
+| Case                                | Feature                                            | Model Download       | Tutorial                              | Example                                                      |
+| ----------------------------------- | -------------------------------------------------- | -------------------- | ------------------------------------- | ------------------------------------------------------------ |
+| Form visual question and answer     | Multimodal general form structured extraction      | [Model Download](#2) | [中文](./多模态表单识别.md)/English   | <img src="https://ai-studio-static-online.cdn.bcebos.com/a3b25766f3074d2facdf88d4a60fc76612f51992fd124cf5bd846b213130665b"  width = "200" height = "200" /> |
+| VAT invoice                         | Key information extraction, SER, RE task fine-tune | [Model Download](#2) | [中文](./发票关键信息抽取.md)/English | <img src="https://user-images.githubusercontent.com/14270174/185393805-c67ff571-cf7e-4217-a4b0-8b396c4f22bb.jpg"  width = "200"  /> |
+| Seal detection and recognition      | End-to-end curved text recognition                 |                      |                                       |                                                              |
+| Universal card recognition          | Universal structured extraction                    |                      |                                       |                                                              |
+| ID card recognition                 | Structured extraction, image shading               |                      |                                       |                                                              |
+| Contract key information extraction | Dense text detection, NLP concatenation            |                      |                                       |                                                              |
 
 <a name="14"></a>
 

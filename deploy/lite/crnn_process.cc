@@ -34,7 +34,6 @@ cv::Mat CrnnResizeImg(cv::Mat img, float wh_ratio, int rec_image_height) {
     resize_w = imgW;
   else
     resize_w = int(ceilf(imgH * ratio));
-
   cv::Mat resize_img;
   cv::resize(img, resize_img, cv::Size(resize_w, imgH), 0.f, 0.f,
              cv::INTER_LINEAR);
