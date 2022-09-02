@@ -221,6 +221,7 @@ def converting_paddle_SER(data1, data2, write_file):
                 for k, v in linking_box:
                     if int(v) == item["id"]:
                         item["linking"] = [int(k), int(v)]
+
         write_file.write(f"{json.dumps(new_annotation)}\n")
 
 
@@ -257,12 +258,12 @@ def get_class_list():
 
 
 def get_current():
-    data1 = open("./train_data/wildreceipt/train.txt", "r").readlines()
+    data1 = open("./train_data/wildreceipt/label1.txt", "r").readlines()
     data2 = open("./train_data/wildreceipt/label2.txt", "r").readlines()
     name2s = []
     for line2 in data2:
         name2s.append(line2.split("\t")[0])
-    with open("./train_data/wildreceipt/image_files/label1.txt", "w") as f:
+    with open("./train_data/wildreceipt/labelnew.txt", "w") as f:
         lines = []
         for line in data1:
             name, _ = line.split("\t")
@@ -278,8 +279,8 @@ if __name__ == '__main__':
     # with open(f'./train_data/wildreceipt/paddle_sdgmr.txt', 'w', encoding='utf-8') as f:
     #     converting_paddle_SER(data, f)
         # converting_mmocr(data, f)
-    data1 = open("./train_data/wildreceipt/label1.txt", "r").readlines()
-    data2 = open("./train_data/wildreceipt/label.txt", "r").readlines()
-    with open(f'./train_data/wildreceipt/paddle_sdmgr.txt', 'w', encoding='utf-8') as f:
-        converting_paddle_SDMGR(data2, f)
+    data1 = open("./train_data/wildreceipt/labelnew.txt", "r").readlines()
+    data2 = open("./train_data/wildreceipt/label2.txt", "r").readlines()
+    with open(f'./train_data/wildreceipt/paddle_ser.txt', 'w', encoding='utf-8') as f:
+        converting_paddle_SER(data1, data2, f)
     # get_current()
