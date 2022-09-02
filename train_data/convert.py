@@ -202,7 +202,7 @@ def converting_paddle_SER(data1, data2, write_file):
                 "transcription": item["transcription"],
                 "label": item["key_cls"],
                 "points": item["points"],
-                "id": "",
+                "id": 88,
                 "linking": []
             }
             for a, b in [line2.split("\t") for line2 in data2]:
@@ -223,6 +223,28 @@ def converting_paddle_SER(data1, data2, write_file):
                         item["linking"] = [int(k), int(v)]
 
         write_file.write(f"{json.dumps(new_annotation)}\n")
+
+
+def change_label(data, writer):
+    for line in data:
+        name, annotation = line.split("\t")
+        annotation = json.loads(annotation)
+        collect = []
+        writer.write(name + "\t")
+        for item in annotation:
+
+            if item["id"] in [0, 1, 2, 3, 4, 5, 6, 7, 8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]:
+                collect.append(link_bbox[str(item["id"])])
+                item["label"] = "QUESTION"
+        for item in annotation:
+            if item["id"] not in collect:
+                item["label"] = "OTHER"
+            else:
+                item["label"] = "ANSWER"
+            if item["id"] == 88:
+                item["label"] = "IGNORE"
+        writer.write(json.dumps(annotation))
+        writer.write("\n")
 
 
 def slipt_wildreceipt():
@@ -281,6 +303,7 @@ if __name__ == '__main__':
         # converting_mmocr(data, f)
     data1 = open("./train_data/wildreceipt/labelnew.txt", "r").readlines()
     data2 = open("./train_data/wildreceipt/label2.txt", "r").readlines()
-    with open(f'./train_data/wildreceipt/paddle_ser.txt', 'w', encoding='utf-8') as f:
-        converting_paddle_SER(data1, data2, f)
-    # get_current()
+    data3 = open("./train_data/wildreceipt/paddle_ser.txt", "r").readlines()
+    with open(f'./train_data/wildreceipt/paddle_ser_new.txt', 'w', encoding='utf-8') as f:
+        change_label(data3, f)
+    # # get_current()
