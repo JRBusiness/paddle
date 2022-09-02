@@ -20,7 +20,7 @@ Global:
   class_path: ./train_data/wildreceipt/class_list.txt
   infer_img: ./train_data/wildreceipt/1.txt
   save_res_path: ./output/sdmgr_kie/predicts_kie.txt
-  img_scale: [ 1024, 512 ]
+  img_scale: [ 800, 400 ]
 
 Architecture:
   model_type: kie
@@ -59,7 +59,7 @@ Train:
   dataset:
     name: SimpleDataSet
     data_dir: ./train_data/wildreceipt/
-    label_file_list: [ './train_data/wildreceipt/wildreceipt_train.txt' ]
+    label_file_list: [ './train_data/wildreceipt/train.txt' ]
     ratio_list: [ 1.0 ]
     transforms:
       - DecodeImage: # load image
@@ -87,7 +87,7 @@ Eval:
     name: SimpleDataSet
     data_dir: ./train_data/wildreceipt
     label_file_list:
-      - ./train_data/wildreceipt/wildreceipt_test.txt
+      - ./train_data/wildreceipt/test.txt
       # - /paddle/data/PaddleOCR/train_data/wildreceipt/1.txt
     transforms:
       - DecodeImage: # load image

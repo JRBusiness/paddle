@@ -28,9 +28,9 @@ import cv2
 import numpy as np
 import paddlehub as hub
 
-from tools.infer.utility import base64_to_cv2
-from tools.infer.predict_det import TextDetector
-from tools.infer.utility import parse_args
+from server.shared.helpers.tools.infer.utility import base64_to_cv2
+from server.shared.helpers.tools.infer.predict_det import TextDetector
+from server.shared.helpers.tools.infer.utility import parse_args
 from deploy.hubserving.ocr_system.params import read_params
 
 

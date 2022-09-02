@@ -1,14 +1,5 @@
 import json
 import shutil
-from glob import glob
-import ast
-import cv2
-import numpy as np
-
-from paddleocr import PaddleOCR
-from shapely.geometry import Polygon
-from shapely.ops import cascaded_union
-import math
 
 class_index = {
     "PROVIDER_NAME": 0,
@@ -33,46 +24,38 @@ class_index = {
     "POLICY_NUMBER": 1,
 }
 
-
+link_bbox = {
+    "0": "20",
+    "1": "21",
+    "2": "22",
+    "3": "23",
+    "4": "24",
+    "5": "25",
+    "6": "26",
+    "7": "27",
+    "8": "28",
+    "9": "29",
+    "10": "30",
+    "11": "31",
+    "12": "32",
+    "13": "33",
+    "14": "34",
+    "16": "36",
+    "17": "37",
+    "18": "38",
+    "19": "39",
+}
 def crop_img(image, polygon):
     top_left = tuple(int(val) for val in polygon[0])
     bottom_right = tuple(int(val) for val in polygon[2])
     return image[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0], :]
 
 
-def converting_hasty(data, write_file):
-    # data = json.load(open(file, 'r'))
-    name = '.'.join(data['metadata']['name'].split('.')[-2:])
-    new_data = {
-        'file_name': name,
-        'height': data['metadata']['height'],
-        'width': data['metadata']['width'],
-        'annotations': []
-    }
-    for item in data['instances']:
-
-        ori_image = cv2.imread(file.replace('___objects.json', ''))
-        instance_array = [item['points'][x:x + 2] for x in range(0, len(item['points']), 2)]
-        cropped_image = crop_img(ori_image, instance_array)
-        text = ocr.ocr(cropped_image, cls=True)
-        if text:
-            text = text[0][-1][0]
-            labels = {
-                'label': item['className'],
-                'transcription': text,
-                'points': item['points'],
-            }
-            new_data['annotations'].append(labels)
-            print(text, end='')
-    print(new_data['file_name'], end='')
-    write_file.write(f'{new_data}\n')
-
-
 def get_bbox(bbox):
     list_items = []
     for bb in bbox:
-        for i in ["x", "y"]:
-            list_items.append([bb["x"], bb["y"]])
+        # for i in ["x", "y"]:
+        list_items.append([bb["x"], bb["y"]])
     return list_items
 
 
@@ -104,20 +87,22 @@ def merge_boxes(box1, box2):
         [box1[3], box2[3]],
     ]
 
-def converting_ubiai2(data, write_file):
+
+def converting_paddle_SDMGR(data, write_file):
     final = []
     for line in data:
         name = line['documentName'].split('.jpg_')[0]
         if line['annotation']:
-            line_result = [f'images_files/{name}.jpg', []]
+            write_file.write(f'images_files/{name}.jpg\t')
             bboxs = line['annotation']
+            line_result = []
             seen = set()
             if bboxs:
                 bbox_dict = {}
                 for item in bboxs:
                     label = item['label']
                     if label not in ["NETWORK", "OUT_OF_POCKET", "RX_PLAN", "PEDIATRIC_MEMBER_DENTAL", "PLAN_CODE"]:
-                        label = class_index[label]
+                        label = label
                         for box in item['boundingBoxes']:
                             bbox = box['normalizedVertices']
                             text = box['word']
@@ -134,17 +119,17 @@ def converting_ubiai2(data, write_file):
                             bbox_dict[label] = [text, bbox]
                 for k, v in bbox_dict.items():
                     labels = {
-                        'transcription': v[0],
                         'label': k,
+                        'transcription': v[0],
                         'points': v[1]
                     }
-                    line_result[1].append(labels)
+                    line_result.append(labels)
                 print(line_result)
-                final.append(json.dumps(line_result))
-    write_file.writelines(line for line in final)
+                write_file.write(json.dumps(line_result))
+                write_file.write("\n")
 
 
-def converting_ubiai(data, write_file):
+def converting_mmocr_SDMGR(data, write_file):
     final = []
     for line in data:
         name = line['documentName'].split('.jpg_')[0]
@@ -189,6 +174,41 @@ def converting_ubiai(data, write_file):
     write_file.writelines(line for line in final)
 
 
+def converting_paddle_SER(data1, data2, write_file):
+    for line in data1:
+        name, annotation = line.split("\t")
+        write_file.write(f"{name}\t")
+        value_present = []
+        linking_box = link_bbox.items()
+        annotation = json.loads(annotation)
+        new_annotation = []
+        for item in annotation:
+            new_item = {
+                "transcription": item["transcription"],
+                "label": item["key_cls"],
+                "points": item["points"],
+                "id": "",
+                "linking": []
+            }
+            for a, b in [line2.split("\t") for line2 in data2]:
+                if a == name:
+                    for item2 in json.loads(b):
+                        if new_item["transcription"] == item2["transcription"]:
+                            key = item2["key_cls"]
+                            new_item["id"] = int(key)
+                            for k, v in linking_box:
+                                if new_item["id"] == int(k):
+                                    new_item["linking"] = [int(k), int(v)]
+                                    value_present.append(int(v))
+            new_annotation.append(new_item)
+        for item in new_annotation:
+            if item["id"] in value_present:
+                for k, v in linking_box:
+                    if int(v) == item["id"]:
+                        item["linking"] = [int(k), int(v)]
+        write_file.write(f"{json.dumps(new_annotation)}\n")
+
+
 def slipt_wildreceipt():
     for i in ['train', 'test']:
         with open(f'wildreceipt/wildreceipt_{i}.txt', 'r') as f:
@@ -220,18 +240,15 @@ def get_class_list():
                             index += 1
         f.writelines([label for label in labels])
 
+
 if __name__ == '__main__':
-    # images_path = 'wildreceipt/'
-    # ocr = PaddleOCR(use_angle_cls=True, lang='en')
-    # cataglog = ['train', 'test']
-    # for i in cataglog:
-    #     with open(f'wildreceipt/openset_{i}.txt', 'w') as f:
-    #         for file in glob(f'wildreceipt/{i}/*.json'):
-    #             converting(file, f)
-    file = './train_data/wildreceipt/annotate.json'
-    data = json.load(open(file, 'r'))
-    list_class = open('./train_data/wildreceipt/class_list.txt', 'r').readlines()
-    with open(f'./train_data/wildreceipt/closeset_train2.txt', 'w', encoding='utf-8') as f:
-        converting_ubiai2(data, f)
-    # slipt_wildreceipt()
-    # get_class_list()
+    # file = './train_data/wildreceipt/annotate.json'
+    # data = json.load(open(file, 'r'))
+    # list_class = open('./train_data/wildreceipt/class_list.txt', 'r').readlines()
+    # with open(f'./train_data/wildreceipt/paddle_sdgmr.txt', 'w', encoding='utf-8') as f:
+    #     converting_paddle_SER(data, f)
+        # converting_mmocr(data, f)
+    data1 = open("./train_data/wildreceipt/image_files/label.txt", "r").readlines()
+    data2 = open("./train_data/wildreceipt/image_files/label2.txt", "r").readlines()
+    with open(f'./train_data/wildreceipt/paddle_ser.txt', 'w', encoding='utf-8') as f:
+        converting_paddle_SER(data1, data2, f)

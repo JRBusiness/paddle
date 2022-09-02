@@ -1,0 +1,21 @@
+If the key and value is on the same line, only use the smaller number before : without value number)
+0:20  - key:value - PROVIDER_NAME (only use 0 for provider name without the 20 in most case)
+1:21  - key:value -   MEM_NAME 
+2:22  - key:value -   MEM_ID
+3:23  - key:value -   SUBCRIBER_ID (ONLY use this when there both Member id and Subscriber id)
+4:24  - key:value -   SUBSCRIBER_NAME (ONLY use this when there both Member name and Subscriber name)
+5:25  - key:value -   RXPLAN
+6:26  - key:value -   RXBIN
+7:27  - key:value -   RXPCN
+8:28  - key:value -   RXID
+9:29  - key:value -   RXGROUP
+10:30  - key:value -   GROUP_NUMBER
+11:31  - key:value -   EFFECTIVE
+12:32  - key:value -   DEPENDENTS
+13:33  - key:value -   HEALTH_PLAN
+14:34  - key:value -   DOB
+16:36  - key:value -   PAYER_ID
+17:37  - key:value -   ISSUER_ID
+18:38  - key:value -   POLICY_NUMBER
+19:39  - key:value -   PLAN_CODE
+88 - ignore - other value 
