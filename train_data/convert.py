@@ -24,6 +24,44 @@ class_index = {
     "POLICY_NUMBER": 1,
 }
 
+num_def = {
+    "0": 20,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+    "10": 10,
+    "11": 11,
+    "12": 12,
+    "13": 13,
+    "14": 14,
+    "15": 16,
+    "16": 17,
+    "17": 18,
+    "18": 21,
+    "19": 22,
+    "20": 23,
+    "21": 24,
+    "22": 25,
+    "23": 26,
+    "24": 27,
+    "25": 28,
+    "26": 29,
+    "27": 30,
+    "28": 31,
+    "29": 32,
+    "30": 33,
+    "31": 34,
+    "32": 36,
+    "33": 37,
+    "34": 38,
+    "35": 88,
+}
 link_bbox = {
     "0": "20",
     "1": "21",
@@ -89,44 +127,21 @@ def merge_boxes(box1, box2):
 
 
 def converting_paddle_SDMGR(data, write_file):
-    final = []
     for line in data:
-        name = line['documentName'].split('.jpg_')[0]
-        if line['annotation']:
-            write_file.write(f'images_files/{name}.jpg\t')
-            bboxs = line['annotation']
-            line_result = []
-            seen = set()
-            if bboxs:
-                bbox_dict = {}
-                for item in bboxs:
-                    label = item['label']
-                    if label not in ["NETWORK", "OUT_OF_POCKET", "RX_PLAN", "PEDIATRIC_MEMBER_DENTAL", "PLAN_CODE"]:
-                        label = label
-                        for box in item['boundingBoxes']:
-                            bbox = box['normalizedVertices']
-                            text = box['word']
-                            if label in seen:
-                                bbox_new = get_bbox_from_array(bbox)
-                                old_box = get_bbox_from_bbox(bbox_dict[label][1])
-                                bbox = merge_boxes(old_box, bbox_new)
-                                text = " ".join([bbox_dict[label][0], text])
-                            if label not in seen:
-                                seen.add(label)
-                                for boxes in item['boundingBoxes']:
-                                    bbox = boxes['normalizedVertices']
-                                    bbox = get_bbox(bbox)
-                            bbox_dict[label] = [text, bbox]
-                for k, v in bbox_dict.items():
-                    labels = {
-                        'label': k,
-                        'transcription': v[0],
-                        'points': v[1]
+        name, annotation = line.split("\t")
+        write_file.write(f"{name}\t")
+        value_present = []
+        annotation = json.loads(annotation)
+        for item in annotation:
+            for k, v in num_def.items():
+                if str(item["key_cls"]) == str(v):
+                    new_item = {
+                        "transcription": item["transcription"],
+                        "label": int(k),
+                        "points": item["points"],
                     }
-                    line_result.append(labels)
-                print(line_result)
-                write_file.write(json.dumps(line_result))
-                write_file.write("\n")
+                    value_present.append(new_item)
+        write_file.write(f"{json.dumps(value_present)}\n")
 
 
 def converting_mmocr_SDMGR(data, write_file):
@@ -265,6 +280,6 @@ if __name__ == '__main__':
         # converting_mmocr(data, f)
     data1 = open("./train_data/wildreceipt/label1.txt", "r").readlines()
     data2 = open("./train_data/wildreceipt/label2.txt", "r").readlines()
-    with open(f'./train_data/wildreceipt/paddle_ser.txt', 'w', encoding='utf-8') as f:
-        converting_paddle_SER(data1, data2, f)
+    with open(f'./train_data/wildreceipt/paddle_sdmgr.txt', 'w', encoding='utf-8') as f:
+        converting_paddle_SDMGR(data2, f)
     # get_current()
