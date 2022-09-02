@@ -27,7 +27,7 @@ Architecture:
   Transform:
   Backbone:
     name: LayoutXLMForSer
-    pretrained: False
+    pretrained: True
     checkpoints:
     # one of base or vi
     mode: vi
