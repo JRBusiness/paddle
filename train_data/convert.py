@@ -279,7 +279,7 @@ if __name__ == '__main__':
     #     converting_paddle_SER(data, f)
         # converting_mmocr(data, f)
     data1 = open("./train_data/wildreceipt/label1.txt", "r").readlines()
-    data2 = open("./train_data/wildreceipt/label2.txt", "r").readlines()
+    data2 = open("./train_data/wildreceipt/label.txt", "r").readlines()
     with open(f'./train_data/wildreceipt/paddle_sdmgr.txt', 'w', encoding='utf-8') as f:
         converting_paddle_SDMGR(data2, f)
     # get_current()
