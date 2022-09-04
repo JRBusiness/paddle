@@ -124,9 +124,9 @@ def load_funsd_label(image_dir, anno_dir):
 
 
 def main():
-    test_image_dir = "train_data/FUNSD/testing_data/images/"
-    test_anno_dir = "train_data/FUNSD/testing_data/annotations/"
-    test_output_dir = "train_data/FUNSD/test.json"
+    test_image_dir = "train_data/wildreceipt/image_files/"
+    test_anno_dir = "train_data/wildreceipt/xfun/val"
+    test_output_dir = "train_data/wildreceipt/xfun/xfunre_test.json"
 
     fn_info_map = load_funsd_label(test_image_dir, test_anno_dir)
     with open(test_output_dir, "w") as fout:
@@ -134,9 +134,9 @@ def main():
             fout.write(fn + ".png" + "\t" + json.dumps(
                 fn_info_map[fn], ensure_ascii=False) + "\n")
 
-    train_image_dir = "train_data/FUNSD/training_data/images/"
-    train_anno_dir = "train_data/FUNSD/training_data/annotations/"
-    train_output_dir = "train_data/FUNSD/train.json"
+    train_image_dir = "train_data/wildreceipt/image_files/"
+    train_anno_dir = "train_data/wildreceipt/xfun/train"
+    train_output_dir = "train_data/wildreceipt/xfun/xfunre_train.json"
 
     fn_info_map = load_funsd_label(train_image_dir, train_anno_dir)
     with open(train_output_dir, "w") as fout:

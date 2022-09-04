@@ -226,7 +226,6 @@ def converting_paddle_SER(data1, data2, write_file):
         for item in new_annotation:
             if item["id"] in value_id and item["linking"] == []:
                 item["label"] = "other"
-                item["id"] = 1
         write_file.write(f"{json.dumps(new_annotation)}\n")
 
 
@@ -242,9 +241,9 @@ def change_label(data, writer):
                 item["label"] = "question"
         for item in annotation:
             if item["id"] == 0:
-                item["label"] = "ignore"
-            elif item["id"] not in collect:
                 item["label"] = "other"
+            elif item["id"] not in collect:
+                item["label"] = "header"
             else:
                 item["label"] = "answer"
 
