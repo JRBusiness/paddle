@@ -28,7 +28,7 @@ class_index = {
 }
 
 num_def = {
-    "0": 1,
+    "0": 51,
     "1": 2,
     "2": 3,
     "3": 4,
@@ -68,8 +68,7 @@ num_def = {
     "37": 39,
 }
 link_bbox = {
-    "0": "20",
-    "1": "21",
+    "51": "21",
     "2": "22",
     "3": "23",
     "4": "24",
@@ -89,7 +88,6 @@ link_bbox = {
     "19": "39",
 }
 value_id = [
-    "20",
     "21",
     "22",
     "23",
@@ -206,7 +204,7 @@ def converting_paddle_SER(data1, data2, write_file):
                 "transcription": item["transcription"],
                 "label": item["key_cls"],
                 "points": item["points"],
-                "id": 88,
+                "id": 0,
                 "linking": []
             }
             for a, b in [line2.split("\t") for line2 in data2]:
@@ -226,8 +224,9 @@ def converting_paddle_SER(data1, data2, write_file):
                     if int(v) == item["id"]:
                         item["linking"] = [int(k), int(v)]
         for item in new_annotation:
-            if item["id"] in value_id and item["lining"] == []:
+            if item["id"] in value_id and item["linking"] == []:
                 item["label"] = "other"
+                item["id"] = 1
         write_file.write(f"{json.dumps(new_annotation)}\n")
 
 
@@ -241,14 +240,14 @@ def change_label(data, writer):
 
             if item["id"] in [0, 1, 2, 3, 4, 5, 6, 7, 8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]:
                 collect.append(link_bbox[str(item["id"])])
-                item["label"] = "QUESTION"
+                item["label"] = "question"
         for item in annotation:
             if item["id"] not in collect:
-                item["label"] = "OTHER"
+                item["label"] = "other"
             else:
-                item["label"] = "ANSWER"
+                item["label"] = "answer"
             if item["id"] == 88:
-                item["label"] = "IGNORE"
+                item["label"] = "ignore"
         writer.write(json.dumps(annotation))
         writer.write("\n")
 
