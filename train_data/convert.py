@@ -237,17 +237,17 @@ def change_label(data, writer):
         collect = []
         writer.write(name + "\t")
         for item in annotation:
-
-            if item["id"] in [0, 1, 2, 3, 4, 5, 6, 7, 8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]:
+            if item["id"] in [2, 3, 4, 5, 6, 7, 8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 51]:
                 collect.append(link_bbox[str(item["id"])])
                 item["label"] = "question"
         for item in annotation:
-            if item["id"] not in collect:
+            if item["id"] == 0:
+                item["label"] = "ignore"
+            elif item["id"] not in collect:
                 item["label"] = "other"
             else:
                 item["label"] = "answer"
-            if item["id"] == 88:
-                item["label"] = "ignore"
+
         writer.write(json.dumps(annotation))
         writer.write("\n")
 
@@ -310,6 +310,6 @@ if __name__ == '__main__':
     data2 = open("./train_data/wildreceipt/label2.txt", "r").readlines()
     data3 = open("./train_data/wildreceipt/paddle_ser.txt", "r").readlines()
     classlist = open("./train_data/wildreceipt/class", "r").readlines()
-    with open(f'./train_data/wildreceipt/paddle_ser.txt', 'w', encoding='utf-8') as f:
-        converting_paddle_SER(data1, data2, f)
+    with open(f'./train_data/wildreceipt/paddle_ser_new.txt', 'w', encoding='utf-8') as f:
+        change_label(data3, f)
     # get_current()
