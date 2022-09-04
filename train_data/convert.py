@@ -88,6 +88,27 @@ link_bbox = {
     "18": "38",
     "19": "39",
 }
+value_id = [
+    "20",
+    "21",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "30",
+    "31",
+    "32",
+    "33",
+    "34",
+    "36",
+    "37",
+    "38",
+    "39",
+]
 def crop_img(image, polygon):
     top_left = tuple(int(val) for val in polygon[0])
     bottom_right = tuple(int(val) for val in polygon[2])
@@ -204,7 +225,9 @@ def converting_paddle_SER(data1, data2, write_file):
                 for k, v in linking_box:
                     if int(v) == item["id"]:
                         item["linking"] = [int(k), int(v)]
-
+        for item in new_annotation:
+            if item["id"] in value_id and item["lining"] == []:
+                item["label"] = "other"
         write_file.write(f"{json.dumps(new_annotation)}\n")
 
 
