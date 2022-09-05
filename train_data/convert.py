@@ -88,7 +88,6 @@ link_bbox = {
     "19": "39",
 }
 value_id = [
-    "21",
     "22",
     "23",
     "24",
@@ -99,7 +98,6 @@ value_id = [
     "29",
     "30",
     "31",
-    "32",
     "33",
     "34",
     "36",
@@ -231,26 +229,21 @@ def converting_paddle_SER(data1, data2, write_file):
                 item["linking"] = []
             if item["id"] == 32:
                 total_dependent.append(item)
-                item["linking"] = []
-        if [big_tem["id"] == 61 for big_tem in new_annotation]:
-            for i, item in enumerate(total_mem_name):
-                item["linking"].extend([[61, 21 + 44 + a] for a in range(len(total_mem_name))])
-                item["id"] = 21 + 44 + i
-            for item in new_annotation:
-                if item["id"] == 61:
-                    item["linking"] = []
+        for big_tem in new_annotation:
+            if big_tem["id"] == 61 :
+                big_tem["linking"] = []
+                big_tem["linking"].extend([[61, 21 + 44 + a] for a in range(len(total_mem_name))])
+                for i, item in enumerate(total_mem_name):
                     item["linking"].extend([[61, 21 + 44 + a] for a in range(len(total_mem_name))])
-        if [big_tem["id"] == 12 for big_tem in new_annotation]:
-            for i, item in enumerate(total_dependent):
-                item["linking"].extend([[12, 32 + 18 + a] for a in range(len(total_dependent))])
-                item["id"] = 32 + 18 + i
-            for item in new_annotation:
-                if item["id"] == 12:
-                    item["linking"] = []
+                    item["id"] = 21 + 44 + i
+            if big_tem["id"] == 12:
+                big_tem["linking"] = []
+                big_tem["linking"].extend([[12, 32 + 18 + a] for a in range(len(total_dependent))])
+                for i, item in enumerate(total_dependent):
                     item["linking"].extend([[12, 32 + 18 + a] for a in range(len(total_dependent))])
-        for item in new_annotation:
-            if item["id"] in value_id and item["linking"] == []:
-                item["label"] = "other"
+                    item["id"] = 32 + 18 + i
+            if big_tem['id'] in value_id and big_tem["linking"] == []:
+                big_tem["label"] = "other"
         write_file.write(f"{json.dumps(new_annotation)}\n")
 
 
