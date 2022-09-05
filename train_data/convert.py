@@ -248,13 +248,12 @@ def converting_paddle_SER(data1, data2, write_file):
                     if vs:
                         for v in vs:
                             vd = json.dumps(v)
-                            if vd not in seen:
-                                seen.add(vd)
-            count = collections.Counter(map(str.casefold, seen))
-            for k, v in count.items():
-                if v == 1:
-                    remove_link.append(k)
-        for link in remove_link:
+                            remove_link.append(vd)
+        d = {}
+        for i in remove_link: d[i] = i in d
+
+        remove_this = [k for k in remove_link if not d[k]]
+        for link in remove_this:
             for item in new_annotation:
                 linking = item["linking"]
                 if linking:
