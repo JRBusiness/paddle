@@ -1,7 +1,7 @@
 import json
 import os
 import shutil
-
+import collections
 import cv2
 
 class_index = {
@@ -240,11 +240,25 @@ def converting_paddle_SER(data1, data2, write_file):
             for value in value_present:
                 if big_tem["id"] == value[-1] and big_tem["id"] not in [32, 21]:
                     big_tem["linking"].append(value)
-        item_list = []
-        for i, item in enumerate(new_annotation):
-            if item["linking"] != []:
-                item_list.appennd(items)
-
+        remove_link = []
+        for item in new_annotation:
+            seen = set()
+            for k, vs in item.items():
+                if k == "linking":
+                    if vs:
+                        for v in vs:
+                            vd = json.dumps(v)
+                            if vd not in seen:
+                                seen.add(vd)
+            count = collections.Counter(map(str.casefold, seen))
+            for k, v in count.items():
+                if v == 1:
+                    remove_link.append(k)
+        for item in new_annotation:
+            linking = json.dumps(item["linking"])
+            for link in remove_link:
+                if linking == link:
+                    item["linking"] = []
         write_file.write(f"{json.dumps(new_annotation)}\n")
 
 
