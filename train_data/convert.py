@@ -239,6 +239,9 @@ def converting_paddle_SER(data1, data2, write_file):
             for item in new_annotation:
                 if item["id"] == 61:
                     item["linking"].extend([[61, 21 + 44 + a] for a in range(len(total_mem_name))])
+        else:
+            for i, item in enumerate(total_mem_name):
+                item["linking"] = []
         if [big_tem["id"] == 12 for big_tem in new_annotation]:
             for i, item in enumerate(total_dependent):
                 item["linking"].extend([[12, 32 + 18 + a] for a in range(len(total_dependent))])
@@ -246,6 +249,9 @@ def converting_paddle_SER(data1, data2, write_file):
             for item in new_annotation:
                 if item["id"] == 12:
                     item["linking"].extend([[12, 32 + 18 + a] for a in range(len(total_dependent))])
+        else:
+            for i, item in enumerate(total_dependent):
+                item["linking"] = []
         for item in new_annotation:
             if item["id"] in value_id and item["linking"] == []:
                 item["label"] = "other"
