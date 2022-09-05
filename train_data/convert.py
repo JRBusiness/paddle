@@ -259,10 +259,10 @@ def change_label(data, writer):
                 collect.append(link_bbox[str(item["id"])])
                 item["label"] = "question"
         for item in annotation:
-            if item["id"] == 0:
-                item["label"] = "other"
+            if item["id"] == 88:
+                item["label"] = "ignore"
             elif item["id"] not in collect:
-                item["label"] = "header"
+                item["label"] = "other"
             else:
                 item["label"] = "answer"
 
