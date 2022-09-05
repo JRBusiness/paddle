@@ -240,6 +240,10 @@ def converting_paddle_SER(data1, data2, write_file):
             for value in value_present:
                 if big_tem["id"] == value[-1] and big_tem["id"] not in [32, 21]:
                     big_tem["linking"].append(value)
+        item_list = []
+        for i, item in enumerate(new_annotation):
+            if item["linking"] != []:
+                item_list.appennd(items)
 
         write_file.write(f"{json.dumps(new_annotation)}\n")
 
