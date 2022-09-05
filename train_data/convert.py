@@ -242,8 +242,6 @@ def converting_paddle_SER(data1, data2, write_file):
                 for i, item in enumerate(total_dependent):
                     item["linking"].extend([[12, 32 + 18 + a] for a in range(len(total_dependent))])
                     item["id"] = 32 + 18 + i
-            if big_tem['id'] in value_id and big_tem["linking"] == []:
-                big_tem["label"] = "other"
         write_file.write(f"{json.dumps(new_annotation)}\n")
 
 
