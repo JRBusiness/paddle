@@ -4,28 +4,44 @@ import shutil
 import collections
 import cv2
 
-class_index = {
-    "PROVIDER_NAME": 0,
-    "MEM_NAME": 2,
-    "MEM_ID": 3,
-    "GROUP_NUMBER": 4,
-    "RXBIN": 5,
-    "RXPCN": 6,
-    "ISSUER_ID": 7,
-    "RXGROUP": 8,
-    "EFFECTIVE": 9,
-    "DEPENDENTS": 10,
-    "HEALTH_PLAN": 11,
-    "DOB": 12,
-    "PAYER_ID": 13,
-    "COVERAGE_DATE": 14,
-    "SUBCRIBER_ID": 15,
-    "PCP": 16,
-    "RXID": 17,
-    "SUBSCRIBER_NAME": 19,
-    "RX_PLAN": 20,
-    "POLICY_NUMBER": 1,
-}
+class_index = [
+    "IGNORE",
+    "MEM_NAME_key",
+    "MEM_ID_key",
+    "SUBCRIBER_ID_key",
+    "SUBSCRIBER_NAME_key",
+    "RXPLAN_key",
+    "RXBIN_key",
+    "RXPCN_key",
+    "RXID_key",
+    "RXGROUP_key",
+    "GROUP_NUMBER_key",
+    "EFFECTIVE_key",
+    "DEPENDENTS_key",
+    "HEALTH_PLAN_key",
+    "DOB_key",
+    "PAYER_ID_key",
+    "ISSUER_ID_key",
+    "MEM_NAME_value",
+    "MEM_ID_value",
+    "SUBCRIBER_ID_value",
+    "SUBSCRIBER_NAME_value",
+    "RXPLAN_value",
+    "RXBIN_value",
+    "RXPCN_value",
+    "RXID_value",
+    "RXGROUP_value",
+    "GROUP_NUMBER_value",
+    "EFFECTIVE_value",
+    "DEPENDENTS_value",
+    "HEALTH_PLAN_value",
+    "DOB_value",
+    "PAYER_ID_value",
+    "ISSUER_ID_value",
+    "POLICY_NUMBER_value",
+    "PROVIDER_NAME",
+    "POLICY_NUMBER",
+]
 
 num_def = {
     "0": 88,
@@ -156,7 +172,7 @@ def converting_paddle_SDMGR(data, write_file, class_list):
                 if item["key_cls"] == str(v):
                     new_item = {
                         "transcription": item["transcription"],
-                        "label": class_list[int(k)],
+                        "label": class_index[int(k)],
                         "points": item["points"],
                     }
                     value_present.append(new_item)
