@@ -68,7 +68,7 @@ num_def = {
     "37": 39,
 }
 link_bbox = {
-    "51": "21",
+    "61": "21",
     "2": "22",
     "3": "23",
     "4": "24",
@@ -239,6 +239,10 @@ def converting_paddle_SER(data1, data2, write_file):
             item["linking"].extend([[12, 32 + 18 + a] for a in range(len(total_dependent))])
             item["id"] = 32 + 18 + i
         for item in new_annotation:
+            if item["id"] == 12:
+                item["linking"] = [[12, 32 + 18 + a] for a in range(len(total_dependent))]
+            elif item["id"] == 61:
+                item["linking"] = [[61, 21 + 44 + a] for a in range(len(total_mem_name))]
             if item["id"] in value_id and item["linking"] == []:
                 item["label"] = "other"
         write_file.write(f"{json.dumps(new_annotation)}\n")
@@ -251,7 +255,7 @@ def change_label(data, writer):
         collect = []
         writer.write(name + "\t")
         for item in annotation:
-            if item["id"] in [2, 3, 4, 5, 6, 7, 8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 51]:
+            if item["id"] in [2, 3, 4, 5, 6, 7, 8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 61]:
                 collect.append(link_bbox[str(item["id"])])
                 item["label"] = "question"
         for item in annotation:
@@ -324,6 +328,8 @@ if __name__ == '__main__':
     data2 = open("./train_data/wildreceipt/label2.txt", "r").readlines()
     data3 = open("./train_data/wildreceipt/paddle_ser.txt", "r").readlines()
     classlist = open("./train_data/wildreceipt/class", "r").readlines()
+    with open(f'./train_data/wildreceipt/paddle_ser.txt', 'w', encoding='utf-8') as f:
+        converting_paddle_SER(data1, data2, f)
     with open(f'./train_data/wildreceipt/paddle_ser_new.txt', 'w', encoding='utf-8') as f:
         change_label(data3, f)
     # get_current()
