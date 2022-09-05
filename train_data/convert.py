@@ -344,8 +344,8 @@ if __name__ == '__main__':
     data2 = open("./train_data/wildreceipt/label2.txt", "r").readlines()
     data3 = open("./train_data/wildreceipt/paddle_ser.txt", "r").readlines()
     classlist = open("./train_data/wildreceipt/class", "r").readlines()
-    with open(f'./train_data/wildreceipt/paddle_ser.txt', 'w', encoding='utf-8') as f:
-        converting_paddle_SER(data1, data2, f)
-    with open(f'./train_data/wildreceipt/paddle_ser_new.txt', 'w', encoding='utf-8') as f:
-        change_label(data3, f)
+    with open(f'./train_data/wildreceipt/paddle_sdgmr.txt', 'w', encoding='utf-8') as f:
+        converting_paddle_SDMGR(data2, f)
+    # with open(f'./train_data/wildreceipt/paddle_ser_new.txt', 'w', encoding='utf-8') as f:
+    #     change_label(data3, f)
     # get_current()
