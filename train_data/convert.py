@@ -236,17 +236,19 @@ def converting_paddle_SER(data1, data2, write_file):
             for i, item in enumerate(total_mem_name):
                 item["linking"].extend([[61, 21 + 44 + a] for a in range(len(total_mem_name))])
                 item["id"] = 21 + 44 + i
+            for item in new_annotation:
+                if item["id"] == 12:
+                    item["linking"] = [[12, 32 + 18 + a] for a in range(len(total_dependent))]
         if [big_tem["id"] == 12 for big_tem in new_annotation]:
             for i, item in enumerate(total_dependent):
                 item["linking"].extend([[12, 32 + 18 + a] for a in range(len(total_dependent))])
                 item["id"] = 32 + 18 + i
+            for item in new_annotation:
+                if item["id"] == 61:
+                    item["linking"] = [[61, 21 + 44 + a] for a in range(len(total_mem_name))]
         for item in new_annotation:
-            if item["id"] == 12:
-                item["linking"] = [[12, 32 + 18 + a] for a in range(len(total_dependent))]
-            elif item["id"] == 61:
-                item["linking"] = [[61, 21 + 44 + a] for a in range(len(total_mem_name))]
             if item["id"] in value_id and item["linking"] == []:
-                item["label"] = "other"
+                    item["label"] = "other"
         write_file.write(f"{json.dumps(new_annotation)}\n")
 
 
