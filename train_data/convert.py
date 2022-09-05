@@ -153,7 +153,7 @@ def converting_paddle_SDMGR(data, write_file):
         annotation = json.loads(annotation)
         for item in annotation:
             for k, v in num_def.items():
-                if str(item["key_cls"]) == str(v):
+                if item["key_cls"] == str(v):
                     new_item = {
                         "transcription": item["transcription"],
                         "label": int(k),
