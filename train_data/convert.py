@@ -213,8 +213,8 @@ def converting_paddle_SER(data1, data2, write_file):
                             new_item["id"] = key
                             for k, v in linking_box:
                                 if new_item["id"] == int(k):
-                                    new_item["linking"].append([int(k), int(v)])
-                                    value_present.append(int(v))
+                                    new_item["linking"].append([new_item["id"], int(v)])
+                                    value_present.append([new_item["id"], int(v)])
             new_annotation.append(new_item)
         total_dependent = []
         total_mem_name = []
@@ -238,12 +238,8 @@ def converting_paddle_SER(data1, data2, write_file):
                     item["linking"].extend([[12, 32 + 18 + a] for a in range(len(total_dependent))])
                     item["id"] = 32 + 18 + i
             for value in value_present:
-                for k, v in link_bbox.items():
-                    if v == value:
-                        if big_tem["id"] == int(v) and big_tem["id"] not in [32, 21]:
-                            big_tem["linking"].append([big_tem["id"], int(value)])
-            if big_tem["id"] in value_id and big_tem["id"] not in value_present:
-                big_tem["linking"] = []
+                if big_tem["id"] == value[-1] and big_tem["id"] not in [32, 21]:
+                    big_tem["linking"].append(value)
 
         write_file.write(f"{json.dumps(new_annotation)}\n")
 
