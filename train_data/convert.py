@@ -204,25 +204,40 @@ def converting_paddle_SER(data1, data2, write_file):
                 "transcription": item["transcription"],
                 "label": item["key_cls"],
                 "points": item["points"],
-                "id": 0,
+                "id": 88,
                 "linking": []
             }
             for a, b in [line2.split("\t") for line2 in data2]:
                 if a == name:
                     for item2 in json.loads(b):
                         if new_item["transcription"] == item2["transcription"]:
-                            key = item2["key_cls"]
-                            new_item["id"] = int(key)
+                            key = int(item2["key_cls"])
+                            new_item["id"] = key
                             for k, v in linking_box:
                                 if new_item["id"] == int(k):
-                                    new_item["linking"] = [int(k), int(v)]
+                                    new_item["linking"].append([int(k), int(v)])
                                     value_present.append(int(v))
             new_annotation.append(new_item)
         for item in new_annotation:
             if item["id"] in value_present:
                 for k, v in linking_box:
                     if int(v) == item["id"]:
-                        item["linking"] = [int(k), int(v)]
+                        item["linking"].append([int(k), int(v)])
+        total_dependent = []
+        total_mem_name = []
+        for item in new_annotation:
+            if item["id"] == 21:
+                total_mem_name.append(item)
+                item["linking"] = []
+            if item["id"] == 32:
+                total_dependent.append(item)
+                item["linking"] = []
+        for i, item in enumerate(total_mem_name):
+            item["linking"].extend([[61, 21 + 44 + a] for a in range(len(total_mem_name))])
+            item["id"] = 21 + 44 + i
+        for i, item in enumerate(total_dependent):
+            item["linking"].extend([[12, 32 + 18 + a] for a in range(len(total_dependent))])
+            item["id"] = 32 + 18 + i
         for item in new_annotation:
             if item["id"] in value_id and item["linking"] == []:
                 item["label"] = "other"
