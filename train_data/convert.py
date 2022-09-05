@@ -254,11 +254,12 @@ def converting_paddle_SER(data1, data2, write_file):
             for k, v in count.items():
                 if v == 1:
                     remove_link.append(k)
-        for item in new_annotation:
-            linking = json.dumps(item["linking"])
-            for link in remove_link:
-                if linking == link:
-                    item["linking"] = []
+        for link in remove_link:
+            for item in new_annotation:
+                linking = item["linking"]
+                if linking:
+                    if json.dumps(linking[0]) == link:
+                        item["linking"] = []
         write_file.write(f"{json.dumps(new_annotation)}\n")
 
 
