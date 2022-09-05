@@ -161,7 +161,7 @@ def merge_boxes(box1, box2):
     ]
 
 
-def converting_paddle_SDMGR(data, write_file, class_list):
+def converting_paddle_SDMGR(data, write_file):
     for line in data:
         name, annotation = line.split("\t")
         write_file.write(f"{name}\t")
@@ -172,7 +172,7 @@ def converting_paddle_SDMGR(data, write_file, class_list):
                 if item["key_cls"] == str(v):
                     new_item = {
                         "transcription": item["transcription"],
-                        "label": class_index[int(k)],
+                        "label": [int(k)],
                         "points": item["points"],
                     }
                     value_present.append(new_item)
@@ -358,7 +358,7 @@ if __name__ == '__main__':
     data3 = open("./train_data/wildreceipt/paddle_ser.txt", "r").readlines()
     classlist = open("./train_data/wildreceipt/class", "r").readlines()
     with open(f'./train_data/wildreceipt/paddle_sdgmr.txt', 'w', encoding='utf-8') as f:
-        converting_paddle_SDMGR(data2, f, list_class)
+        converting_paddle_SDMGR(data2, f)
     # with open(f'./train_data/wildreceipt/paddle_ser_new.txt', 'w', encoding='utf-8') as f:
     #     change_label(data3, f)
     # get_current()
