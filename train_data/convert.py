@@ -44,7 +44,7 @@ class_index = [
 ]
 
 num_def = {
-    "0": 88,
+    "0": 0,
     "1": 1,
     "2": 2,
     "3": 3,
@@ -77,8 +77,8 @@ num_def = {
     "30": 34,
     "31": 36,
     "32": 37,
-    "33": 38,
-    "34": 20,
+    "33": 20,
+    "34": 38,
 }
 link_bbox = {
     "61": "21",
@@ -172,7 +172,7 @@ def converting_paddle_SDMGR(data, write_file):
                 if item["key_cls"] == str(v):
                     new_item = {
                         "transcription": item["transcription"],
-                        "label": item["key_cls"],
+                        "label": int(k),
                         "points": item["points"],
                     }
                     value_present.append(new_item)
