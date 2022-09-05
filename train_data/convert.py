@@ -260,14 +260,15 @@ def change_label(data, writer):
         annotation = json.loads(annotation)
         collect = []
         writer.write(name + "\t")
+        key_list = [2, 3, 4, 5, 6, 7, 8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 61]
         for item in annotation:
-            if item["id"] in [2, 3, 4, 5, 6, 7, 8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 61]:
-                collect.append(link_bbox[str(item["id"])])
+            if item["id"] in key_list:
                 item["label"] = "question"
+                collect.append(link_bbox[str(item["id"])])
         for item in annotation:
             if item["id"] == 88:
                 item["label"] = "ignore"
-            elif item["id"] not in collect:
+            elif item["id"] not in collect and item["id"] not in key_list:
                 item["label"] = "other"
             elif item["id"] in collect:
                 item["label"] = "answer"
