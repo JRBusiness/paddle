@@ -98,7 +98,6 @@ value_id = [
     "29",
     "30",
     "31",
-    "32"
     "33",
     "34",
     "36",
@@ -243,7 +242,8 @@ def converting_paddle_SER(data1, data2, write_file):
                     if v == value:
                         if big_tem["id"] == int(v) and big_tem["id"] not in [32, 21]:
                             big_tem["linking"].append([big_tem["id"], int(value)])
-
+            if big_tem["id"] in value_id and big_tem["id"] not in value_present:
+                big_tem["linking"] = []
 
         write_file.write(f"{json.dumps(new_annotation)}\n")
 
