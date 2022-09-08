@@ -1,75 +1,87 @@
 import json
 import os
 import shutil
-
+import collections
 import cv2
 
-class_index = {
-    "PROVIDER_NAME": 0,
-    "MEM_NAME": 2,
-    "MEM_ID": 3,
-    "GROUP_NUMBER": 4,
-    "RXBIN": 5,
-    "RXPCN": 6,
-    "ISSUER_ID": 7,
-    "RXGROUP": 8,
-    "EFFECTIVE": 9,
-    "DEPENDENTS": 10,
-    "HEALTH_PLAN": 11,
-    "DOB": 12,
-    "PAYER_ID": 13,
-    "COVERAGE_DATE": 14,
-    "SUBCRIBER_ID": 15,
-    "PCP": 16,
-    "RXID": 17,
-    "SUBSCRIBER_NAME": 19,
-    "RX_PLAN": 20,
-    "POLICY_NUMBER": 1,
-}
+class_index = [
+    "IGNORE",
+    "MEM_NAME_key",
+    "MEM_ID_key",
+    "SUBCRIBER_ID_key",
+    "SUBSCRIBER_NAME_key",
+    "RXPLAN_key",
+    "RXBIN_key",
+    "RXPCN_key",
+    "RXID_key",
+    "RXGROUP_key",
+    "GROUP_NUMBER_key",
+    "EFFECTIVE_key",
+    "DEPENDENTS_key",
+    "HEALTH_PLAN_key",
+    "DOB_key",
+    "PAYER_ID_key",
+    "ISSUER_ID_key",
+    "MEM_NAME_value",
+    "MEM_ID_value",
+    "SUBCRIBER_ID_value",
+    "SUBSCRIBER_NAME_value",
+    "RXPLAN_value",
+    "RXBIN_value",
+    "RXPCN_value",
+    "RXID_value",
+    "RXGROUP_value",
+    "GROUP_NUMBER_value",
+    "EFFECTIVE_value",
+    "DEPENDENTS_value",
+    "HEALTH_PLAN_value",
+    "DOB_value",
+    "PAYER_ID_value",
+    "ISSUER_ID_value",
+    "POLICY_NUMBER_value",
+    "PROVIDER_NAME",
+    "POLICY_NUMBER",
+]
 
 num_def = {
-    "0": 1,
-    "1": 2,
-    "2": 3,
-    "3": 4,
-    "4": 5,
-    "5": 6,
-    "6": 7,
-    "7": 8,
-    "8": 9,
-    "9": 10,
-    "10": 11,
-    "11": 12,
-    "12": 13,
-    "13": 14,
-    "14": 16,
-    "15": 17,
-    "16": 18,
-    "17": 19,
-    "18": 20,
-    "19": 21,
-    "20": 22,
-    "21": 23,
-    "22": 24,
-    "23": 25,
-    "24": 26,
-    "25": 27,
-    "26": 28,
-    "27": 29,
-    "28": 30,
-    "29": 31,
-    "30": 32,
-    "31": 33,
-    "32": 34,
-    "33": 35,
-    "34": 36,
-    "35": 37,
-    "36": 38,
-    "37": 39,
+    "0": 88,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+    "10": 10,
+    "11": 11,
+    "12": 12,
+    "13": 13,
+    "14": 14,
+    "15": 16,
+    "16": 17,
+    "17": 21,
+    "18": 22,
+    "19": 23,
+    "20": 24,
+    "21": 25,
+    "22": 26,
+    "23": 27,
+    "24": 28,
+    "25": 29,
+    "26": 30,
+    "27": 31,
+    "28": 32,
+    "29": 33,
+    "30": 34,
+    "31": 36,
+    "32": 37,
+    "33": 38,
+    "34": 20,
 }
 link_bbox = {
-    "0": "20",
-    "1": "21",
+    "61": "21",
     "2": "22",
     "3": "23",
     "4": "24",
@@ -88,6 +100,24 @@ link_bbox = {
     "18": "38",
     "19": "39",
 }
+value_id = [
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "30",
+    "31",
+    "33",
+    "34",
+    "36",
+    "37",
+    "38",
+    "39",
+]
 def crop_img(image, polygon):
     top_left = tuple(int(val) for val in polygon[0])
     bottom_right = tuple(int(val) for val in polygon[2])
@@ -139,7 +169,7 @@ def converting_paddle_SDMGR(data, write_file):
         annotation = json.loads(annotation)
         for item in annotation:
             for k, v in num_def.items():
-                if str(item["key_cls"]) == str(v):
+                if item["key_cls"] == str(v):
                     new_item = {
                         "transcription": item["transcription"],
                         "label": int(k),
@@ -192,19 +222,56 @@ def converting_paddle_SER(data1, data2, write_file):
                 if a == name:
                     for item2 in json.loads(b):
                         if new_item["transcription"] == item2["transcription"]:
-                            key = item2["key_cls"]
-                            new_item["id"] = int(key)
+                            key = int(item2["key_cls"])
+                            new_item["id"] = key
                             for k, v in linking_box:
                                 if new_item["id"] == int(k):
-                                    new_item["linking"] = [int(k), int(v)]
-                                    value_present.append(int(v))
+                                    new_item["linking"].append([new_item["id"], int(v)])
+                                    value_present.append([new_item["id"], int(v)])
             new_annotation.append(new_item)
+        total_dependent = []
+        total_mem_name = []
         for item in new_annotation:
-            if item["id"] in value_present:
-                for k, v in linking_box:
-                    if int(v) == item["id"]:
-                        item["linking"] = [int(k), int(v)]
+            if item["id"] == 21:
+                total_mem_name.append(item)
+                item["linking"] = []
+            if item["id"] == 32:
+                total_dependent.append(item)
+        for big_tem in new_annotation:
+            if big_tem["id"] == 61:
+                big_tem["linking"] = []
+                big_tem["linking"].extend([[61, 21 + 44 + a] for a in range(len(total_mem_name))])
+                for i, item in enumerate(total_mem_name):
+                    item["linking"].extend([[61, 21 + 44 + a] for a in range(len(total_mem_name))])
+                    item["id"] = 21 + 44 + i
+            if big_tem["id"] == 12:
+                big_tem["linking"] = []
+                big_tem["linking"].extend([[12, 32 + 18 + a] for a in range(len(total_dependent))])
+                for i, item in enumerate(total_dependent):
+                    item["linking"].extend([[12, 32 + 18 + a] for a in range(len(total_dependent))])
+                    item["id"] = 32 + 18 + i
+            for value in value_present:
+                if big_tem["id"] == value[-1] and big_tem["id"] not in [32, 21]:
+                    big_tem["linking"].append(value)
+        remove_link = []
+        for item in new_annotation:
+            seen = set()
+            for k, vs in item.items():
+                if k == "linking":
+                    if vs:
+                        for v in vs:
+                            vd = json.dumps(v)
+                            remove_link.append(vd)
+        d = {}
+        for i in remove_link: d[i] = i in d
 
+        remove_this = [k for k in remove_link if not d[k]]
+        for link in remove_this:
+            for item in new_annotation:
+                linking = item["linking"]
+                if linking:
+                    if json.dumps(linking[0]) == link:
+                        item["linking"] = []
         write_file.write(f"{json.dumps(new_annotation)}\n")
 
 
@@ -214,18 +281,20 @@ def change_label(data, writer):
         annotation = json.loads(annotation)
         collect = []
         writer.write(name + "\t")
+        key_list = [2, 3, 4, 5, 6, 7, 8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 61]
         for item in annotation:
-
-            if item["id"] in [0, 1, 2, 3, 4, 5, 6, 7, 8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]:
-                collect.append(link_bbox[str(item["id"])])
-                item["label"] = "QUESTION"
+            if item["id"] in key_list:
+                item["label"] = "question"
+                collect.append(int(link_bbox[str(item["id"])]))
         for item in annotation:
-            if item["id"] not in collect:
-                item["label"] = "OTHER"
-            else:
-                item["label"] = "ANSWER"
             if item["id"] == 88:
-                item["label"] = "IGNORE"
+                item["label"] = "ignore"
+            elif item["id"] in collect:
+                item["label"] = "answer"
+            elif item["id"] not in collect and item["id"] not in key_list and item["id"] != 88:
+                item["label"] = "other"
+
+
         writer.write(json.dumps(annotation))
         writer.write("\n")
 
@@ -280,14 +349,16 @@ def get_current():
 if __name__ == '__main__':
     # file = './train_data/wildreceipt/annotate.json'
     # data = json.load(open(file, 'r'))
-    # list_class = open('./train_data/wildreceipt/class_list.txt', 'r').readlines()
+    list_class = open('./train_data/wildreceipt/class_list.txt', 'r').readlines()
     # with open(f'./train_data/wildreceipt/paddle_sdgmr.txt', 'w', encoding='utf-8') as f:
     #     converting_paddle_SER(data, f)
         # converting_mmocr(data, f)
-    data1 = open("./train_data/wildreceipt/Label1.txt", "r").readlines()
-    data2 = open("./train_data/wildreceipt/Label2.txt", "r").readlines()
+    data1 = open("./train_data/wildreceipt/labelnew.txt", "r").readlines()
+    data2 = open("./train_data/wildreceipt/label2.txt", "r").readlines()
     data3 = open("./train_data/wildreceipt/paddle_ser.txt", "r").readlines()
     classlist = open("./train_data/wildreceipt/class", "r").readlines()
-    with open(f'./train_data/wildreceipt/paddle_ser.txt', 'w', encoding='utf-8') as f:
-        converting_paddle_SER(data1, data2, f)
-    # # get_current()
+    with open(f'./train_data/wildreceipt/paddle_sdgmr.txt', 'w', encoding='utf-8') as f:
+        converting_paddle_SDMGR(data2, f)
+    # with open(f'./train_data/wildreceipt/paddle_ser_new.txt', 'w', encoding='utf-8') as f:
+    #     change_label(data3, f)
+    # get_current()
