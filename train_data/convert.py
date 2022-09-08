@@ -1,5 +1,8 @@
 import json
+import os
 import shutil
+
+import cv2
 
 class_index = {
     "PROVIDER_NAME": 0,
@@ -25,42 +28,44 @@ class_index = {
 }
 
 num_def = {
-    "0": 20,
-    "1": 1,
-    "2": 2,
-    "3": 3,
-    "4": 4,
-    "5": 5,
-    "6": 6,
-    "7": 7,
-    "8": 8,
-    "9": 9,
-    "10": 10,
-    "11": 11,
-    "12": 12,
-    "13": 13,
-    "14": 14,
-    "15": 16,
-    "16": 17,
-    "17": 18,
-    "18": 21,
-    "19": 22,
-    "20": 23,
-    "21": 24,
-    "22": 25,
-    "23": 26,
-    "24": 27,
-    "25": 28,
-    "26": 29,
-    "27": 30,
-    "28": 31,
-    "29": 32,
-    "30": 33,
-    "31": 34,
-    "32": 36,
-    "33": 37,
-    "34": 38,
-    "35": 88,
+    "0": 1,
+    "1": 2,
+    "2": 3,
+    "3": 4,
+    "4": 5,
+    "5": 6,
+    "6": 7,
+    "7": 8,
+    "8": 9,
+    "9": 10,
+    "10": 11,
+    "11": 12,
+    "12": 13,
+    "13": 14,
+    "14": 16,
+    "15": 17,
+    "16": 18,
+    "17": 19,
+    "18": 20,
+    "19": 21,
+    "20": 22,
+    "21": 23,
+    "22": 24,
+    "23": 25,
+    "24": 26,
+    "25": 27,
+    "26": 28,
+    "27": 29,
+    "28": 30,
+    "29": 31,
+    "30": 32,
+    "31": 33,
+    "32": 34,
+    "33": 35,
+    "34": 36,
+    "35": 37,
+    "36": 38,
+    "37": 39,
 }
 link_bbox = {
     "0": "20",
@@ -144,49 +149,27 @@ def converting_paddle_SDMGR(data, write_file):
         write_file.write(f"{json.dumps(value_present)}\n")
 
 
-def converting_mmocr_SDMGR(data, write_file):
-    final = []
+def converting_mmocr_SDMGR(data, write_file, class_list):
     for line in data:
-        name = line['documentName'].split('.jpg_')[0]
-        if line['annotation']:
-            name = f'images_files/{name}.jpg'
-            new_data = {
-                'file_name': name,
-                'height': line['tokens'][0]['height'],
-                'width': line['tokens'][0]['width'],
-                'annotations': []
-            }
-            bboxs = line['annotation']
-            seen = set()
-            if bboxs:
-                bbox_dict = {}
-                for item in bboxs:
-                    label = item['label']
-                    if label not in ["NETWORK", "OUT_OF_POCKET", "RX_PLAN", "PEDIATRIC_MEMBER_DENTAL", "PLAN_CODE"]:
-                        label = class_index[label]
-                        for box in item['boundingBoxes']:
-                            bbox = box['normalizedVertices']
-                            text = box['word']
-                            if label in seen:
-                                bbox_new = get_bbox_from_array(bbox)
-                                bbox = merge_boxes(bbox_dict[label][1], bbox_new)
-                                text = " ".join([bbox_dict[label][0], text])
-                            if label not in seen:
-                                seen.add(label)
-                                for boxes in item['boundingBoxes']:
-                                    bbox = boxes['normalizedVertices']
-                                    bbox = get_bbox_from_array(bbox)
-                            bbox_dict[label] = [text, bbox]
-                for k, v in bbox_dict.items():
-                    labels = {
-                        'box': v[1],
-                        'text': v[0],
-                        'label': k,
-                    }
-                    new_data["annotations"].append(labels)
-                print(new_data)
-                final.append(json.dumps(new_data))
-    write_file.writelines(line for line in final)
+        name, annotation = line.split("\t")
+        annotation = json.loads(annotation)
+        width, height, _ = cv2.imread(f"train_data/wildreceipt/{name}").shape
+        new_data = {
+            'file_name': name,
+            'height': height,
+            'width': width,
+            'annotations': []
+        }
+        for item in annotation:
+            for k, v in num_def.items():
+                if item["id"] == v:
+                    new_data["annotations"].append({
+                        'box': get_bbox_from_bbox(item["points"]),
+                        'text': item["transcription"],
+                        'label': class_list[int(k)],
+                    })
+        write_file.write(json.dumps(new_data))
+        write_file.write("\n")
 
 
 def converting_paddle_SER(data1, data2, write_file):
@@ -301,9 +284,10 @@ if __name__ == '__main__':
     # with open(f'./train_data/wildreceipt/paddle_sdgmr.txt', 'w', encoding='utf-8') as f:
     #     converting_paddle_SER(data, f)
         # converting_mmocr(data, f)
-    data1 = open("./train_data/wildreceipt/labelnew.txt", "r").readlines()
-    data2 = open("./train_data/wildreceipt/label2.txt", "r").readlines()
+    data1 = open("./train_data/wildreceipt/Label1.txt", "r").readlines()
+    data2 = open("./train_data/wildreceipt/Label2.txt", "r").readlines()
     data3 = open("./train_data/wildreceipt/paddle_ser.txt", "r").readlines()
-    with open(f'./train_data/wildreceipt/paddle_ser_new.txt', 'w', encoding='utf-8') as f:
-        change_label(data3, f)
+    classlist = open("./train_data/wildreceipt/class", "r").readlines()
+    with open(f'./train_data/wildreceipt/paddle_ser.txt', 'w', encoding='utf-8') as f:
+        converting_paddle_SER(data1, data2, f)
     # # get_current()
