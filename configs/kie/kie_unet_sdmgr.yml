@@ -12,11 +12,11 @@ Global:
   # 2. If you want to finetune the pretrained models we provide in the docs,
   #    you should set load_static_weights as False.
   load_static_weights: False
-  cal_metric_during_train: False
+  cal_metric_during_train: True
   pretrained_model: 
   checkpoints:
   save_inference_dir:
-  use_visualdl: False
+  use_visualdl: True
   class_path: ./train_data/wildreceipt/class_list.txt
   infer_img: ./train_data/wildreceipt/1.txt
   save_res_path: ./output/sdmgr_kie/predicts_kie.txt
