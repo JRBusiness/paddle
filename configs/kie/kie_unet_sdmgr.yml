@@ -1,6 +1,6 @@
 Global:
   use_gpu: True
-  epoch_num: 60
+  epoch_num: 80
   log_smooth_window: 20
   print_batch_step: 50
   save_model_dir: ./output/kie_5/
@@ -17,10 +17,10 @@ Global:
   checkpoints:
   save_inference_dir:
   use_visualdl: False
-  class_path: ./train_data/wildreceipt/class_list.txt
+  class_path: &class_path ./train_data/wildreceipt/class_list.txt
   infer_img: ./train_data/wildreceipt/1.txt
   save_res_path: ./output/sdmgr_kie/predicts_kie.txt
-  img_scale: [ 800, 400 ]
+  img_scale: [ 1024, 512 ]
 
 Architecture:
   model_type: kie
