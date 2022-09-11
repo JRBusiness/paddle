@@ -175,6 +175,7 @@ def converting_paddle_SDMGR(data, write_file):
                     new_item = {
                         "transcription": item["transcription"],
                         "label": v,
+                        "key_cls": k,
                         "points": item["points"],
                     }
                     value_present.append(new_item)
