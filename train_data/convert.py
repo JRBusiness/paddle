@@ -163,16 +163,18 @@ def merge_boxes(box1, box2):
 
 def converting_paddle_SDMGR(data, write_file):
     for line in data:
+        class_name = open("train_data/wildreceipt/class_list.txt", "r").readlines()
         name, annotation = line.split("\t")
         write_file.write(f"{name}\t")
         value_present = []
         annotation = json.loads(annotation)
         for item in annotation:
-            for k, v in num_def.items():
-                if item["key_cls"] == str(v):
+            for classes in class_name:
+                k, v = classes.replace("\n", "").split(" ")
+                if item["label"] == k:
                     new_item = {
                         "transcription": item["transcription"],
-                        "label": int(k),
+                        "label": v,
                         "points": item["points"],
                     }
                     value_present.append(new_item)
@@ -353,12 +355,12 @@ if __name__ == '__main__':
     # with open(f'./train_data/wildreceipt/paddle_sdgmr.txt', 'w', encoding='utf-8') as f:
     #     converting_paddle_SER(data, f)
         # converting_mmocr(data, f)
-    data1 = open("./train_data/wildreceipt/labelnew.txt", "r").readlines()
-    data2 = open("./train_data/wildreceipt/label2.txt", "r").readlines()
-    data3 = open("./train_data/wildreceipt/paddle_ser.txt", "r").readlines()
-    classlist = open("./train_data/wildreceipt/class", "r").readlines()
+    data1 = open("./train_data/wildreceipt/Label.txt", "r").readlines()
+    # data2 = open("./train_data/wildreceipt/label2.txt", "r").readlines()
+    # data3 = open("./train_data/wildreceipt/paddle_ser.txt", "r").readlines()
+    # classlist = open("./train_data/wildreceipt/class", "r").readlines()
     with open(f'./train_data/wildreceipt/paddle_sdgmr.txt', 'w', encoding='utf-8') as f:
-        converting_paddle_SDMGR(data2, f)
+        converting_paddle_SDMGR(data1, f)
     # with open(f'./train_data/wildreceipt/paddle_ser_new.txt', 'w', encoding='utf-8') as f:
     #     change_label(data3, f)
     # get_current()
