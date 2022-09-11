@@ -1,10 +1,10 @@
 Global:
   use_gpu: True
-  epoch_num: 80
+  epoch_num: 100
   log_smooth_window: 20
   print_batch_step: 50
   save_model_dir: ./output/kie_5/
-  save_epoch_step: 50
+  save_epoch_step: 20
   # evaluation is run every 5000 iterations after the 4000th iteration
   eval_batch_step: [ 0, 80 ]
   # 1. If pretrained_model is saved in static mode, such as classification pretrained model
