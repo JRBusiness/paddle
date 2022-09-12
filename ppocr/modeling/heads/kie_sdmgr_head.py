@@ -35,7 +35,7 @@ class SDMGRHead(nn.Layer):
                  edge_input=5,
                  edge_embed=256,
                  num_gnn=2,
-                 num_classes=26,
+                 num_classes=50,
                  bidirectional=False):
         super().__init__()
 
