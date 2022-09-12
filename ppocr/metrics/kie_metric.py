@@ -25,7 +25,7 @@ __all__ = ['KIEMetric']
 
 class KIEMetric(object):
     def __init__(self, main_indicator='hmean',
-                 ignores = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 25],
+                 ignores=[],
                  **kwargs
                  ):
         self.main_indicator = main_indicator
