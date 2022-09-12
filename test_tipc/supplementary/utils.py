@@ -92,13 +92,13 @@ def load_model(config, model, optimizer=None):
     pretrained_model = config.get('pretrained_model')
     best_model_dict = {}
     if checkpoints:
-        if checkpoints.endswith('.pdparams'):
-            checkpoints = checkpoints.replace('.pdparams', '')
-        assert os.path.exists(checkpoints + ".pdparams"), \
+        if checkpoints.endswith('best_accuracy.pdparams'):
+            checkpoints = checkpoints.replace('best_accuracy.pdparams', '')
+        assert os.path.exists(checkpoints + "best_accuracy.pdparams"), \
             "The {}.pdparams does not exists!".format(checkpoints)
 
         # load params from trained model
-        params = paddle.load(checkpoints + '.pdparams')
+        params = paddle.load(checkpoints + 'best_accuracy.pdparams')
         state_dict = model.state_dict()
         new_state_dict = {}
         for key, value in state_dict.items():
@@ -116,16 +116,16 @@ def load_model(config, model, optimizer=None):
         model.set_state_dict(new_state_dict)
 
         if optimizer is not None:
-            if os.path.exists(checkpoints + '.pdopt'):
-                optim_dict = paddle.load(checkpoints + '.pdopt')
+            if os.path.exists(checkpoints + 'best_accuracy.pdopt'):
+                optim_dict = paddle.load(checkpoints + 'best_accuracy.pdopt')
                 optimizer.set_state_dict(optim_dict)
             else:
                 logger.warning(
                     "{}.pdopt is not exists, params of optimizer is not loaded".
                     format(checkpoints))
 
-        if os.path.exists(checkpoints + '.states'):
-            with open(checkpoints + '.states', 'rb') as f:
+        if os.path.exists(checkpoints + 'best_accuracy.states'):
+            with open(checkpoints + 'best_accuracy.states', 'rb') as f:
                 states_dict = pickle.load(f) if six.PY2 else pickle.load(
                     f, encoding='latin1')
             best_model_dict = states_dict.get('best_model_dict', {})
@@ -141,12 +141,12 @@ def load_model(config, model, optimizer=None):
 
 def load_pretrained_params(model, path):
     logger = get_logger()
-    if path.endswith('.pdparams'):
-        path = path.replace('.pdparams', '')
-    assert os.path.exists(path + ".pdparams"), \
+    if path.endswith('best_accuracy.pdparams'):
+        path = path.replace('best_accuracy.pdparams', '')
+    assert os.path.exists(path + "best_accuracy.pdparams"), \
         "The {}.pdparams does not exists!".format(path)
 
-    params = paddle.load(path + '.pdparams')
+    params = paddle.load(path + 'best_accuracy.pdparams')
     state_dict = model.state_dict()
     new_state_dict = {}
     for k1 in params.keys():

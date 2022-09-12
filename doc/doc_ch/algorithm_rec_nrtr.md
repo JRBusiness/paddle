@@ -148,7 +148,7 @@ Predicts of ./doc/imgs_words_en/word_10.png:('pain', 0.9465042352676392)
 
 ```python
 
-    params = paddle.load('path/' + '.pdparams') # 旧版本参数
+    params = paddle.load('path/' + 'best_accuracy.pdparams') # 旧版本参数
     state_dict = model.state_dict() # 新版模型参数
     new_state_dict = {}
 

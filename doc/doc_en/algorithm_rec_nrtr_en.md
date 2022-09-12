@@ -129,7 +129,7 @@ Not supported
 
 ```python
 
-    params = paddle.load('path/' + '.pdparams') # the old version parameters
+    params = paddle.load('path/' + 'best_accuracy.pdparams') # the old version parameters
     state_dict = model.state_dict() # the new version model parameters
     new_state_dict = {}
 

@@ -64,7 +64,7 @@ class WandbLogger(BaseLogger):
         self.run.log(updated_metrics, step=step)
 
     def log_model(self, is_best, prefix, metadata=None):
-        model_path = os.path.join(self.save_dir, prefix + '.pdparams')
+        model_path = os.path.join(self.save_dir, prefix + 'best_accuracy.pdparams')
         artifact = self.wandb.Artifact('model-{}'.format(self.run.id), type='model', metadata=metadata)
         artifact.add_file(model_path, name="model_ckpt.pdparams")
 

@@ -48,16 +48,16 @@ def save_model(model,
     """
     _mkdir_if_not_exist(model_path, logger)
     model_prefix = os.path.join(model_path, prefix)
-    paddle.save(model.state_dict(), model_prefix + '.pdparams')
+    paddle.save(model.state_dict(), model_prefix + 'best_accuracy.pdparams')
     if type(optimizer) is list:
-        paddle.save(optimizer[0].state_dict(), model_prefix + '.pdopt')
-        paddle.save(optimizer[1].state_dict(), model_prefix + "_1" + '.pdopt')
+        paddle.save(optimizer[0].state_dict(), model_prefix + 'best_accuracy.pdopt')
+        paddle.save(optimizer[1].state_dict(), model_prefix + "_1" + 'best_accuracy.pdopt')
 
     else:
-        paddle.save(optimizer.state_dict(), model_prefix + '.pdopt')
+        paddle.save(optimizer.state_dict(), model_prefix + 'best_accuracy.pdopt')
 
     # # save metric and config
-    # with open(model_prefix + '.states', 'wb') as f:
+    # with open(model_prefix + 'best_accuracy.states', 'wb') as f:
     #     pickle.dump(kwargs, f, protocol=2)
     if is_best:
         logger.info('save best model is to {}'.format(model_prefix))
