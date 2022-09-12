@@ -169,16 +169,12 @@ def converting_paddle_SDMGR(data, write_file):
         value_present = []
         annotation = json.loads(annotation)
         for item in annotation:
-            for classes in class_name:
-                k, v = classes.replace("\n", "").split(" ")
-                if item["label"] == k:
-                    new_item = {
-                        "transcription": item["transcription"],
-                        "label": k,
-                        "key_cls": v,
-                        "points": item["points"],
-                    }
-                    value_present.append(new_item)
+            new_item = {
+                "label": int(item["key_cls"]),
+                "transcription": item["transcription"],
+                "points": item["points"],
+            }
+            value_present.append(new_item)
         write_file.write(f"{json.dumps(value_present)}\n")
 
 
