@@ -24,9 +24,13 @@ __all__ = ['KIEMetric']
 
 
 class KIEMetric(object):
-    def __init__(self, main_indicator='hmean', **kwargs):
+    def __init__(self, main_indicator='hmean',
+                 ignores = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 25],
+                 **kwargs
+                 ):
         self.main_indicator = main_indicator
         self.reset()
+        self.ignores = ignores
         self.node = []
         self.gt = []
 
@@ -40,9 +44,9 @@ class KIEMetric(object):
         # self.results.append(result)
 
     def compute_f1_score(self, preds, gts):
-        ignores = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 25]
+        # ignores = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 25]
         C = preds.shape[1]
-        classes = np.array(sorted(set(range(C)) - set(ignores)))
+        classes = np.array(sorted(set(range(C)) - set(self.ignores)))
         hist = np.bincount(
             (gts * C).astype('int64') + preds.argmax(1), minlength=C
             **2).reshape([C, C]).astype('float32')

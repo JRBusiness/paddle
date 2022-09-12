@@ -53,9 +53,9 @@ Metric:
 Train:
   dataset:
     name: SimpleDataSet
-    data_dir: train_data/wildreceipt/
+    data_dir: train_data/XFUND/zh_train/image
     label_file_list: 
-      - train_data/wildreceipt/ser_train.json
+      - train_data/XFUND/zh_train/train.json
     ratio_list: [ 1.0 ]
     transforms:
       - DecodeImage: # load image
@@ -64,7 +64,7 @@ Train:
       - VQATokenLabelEncode: # Class handling label
           contains_re: True
           algorithm: *algorithm
-          class_path: &class_path train_data/wildreceipt/class_list.txt
+          class_path: &class_path train_data/XFUND/class_list_xfun.txt
           use_textline_bbox_info: &use_textline_bbox_info True
           order_method: &order_method "tb-yx"
       - VQATokenPad:
@@ -93,9 +93,9 @@ Train:
 Eval:
   dataset:
     name: SimpleDataSet
-    data_dir: train_data/wildreceipt/
+    data_dir: train_data/XFUND/zh_val/image
     label_file_list:
-      - train_data/wildreceipt/ser_val.json
+      - train_data/XFUND/zh_val/val.json
     transforms:
       - DecodeImage: # load image
           img_mode: RGB

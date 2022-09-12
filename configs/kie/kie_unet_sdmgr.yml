@@ -54,6 +54,7 @@ PostProcess:
 Metric:
   name: KIEMetric
   main_indicator: hmean
+  ignore_classes: [0]
 
 Train:
   dataset:
@@ -79,7 +80,7 @@ Train:
   loader:
     shuffle: True
     drop_last: False
-    batch_size_per_card: 2
+    batch_size_per_card: 1
     num_workers: 2
 
 Eval:
