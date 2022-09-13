@@ -14,7 +14,7 @@ Global:
   load_static_weights: False
   cal_metric_during_train: False
   pretrained_model: 
-  checkpoints:
+  checkpoints: output/kie_1/best_accuracy
   save_inference_dir:
   use_visualdl: False
   class_path: &class_path ./train_data/wildreceipt/class_list.txt
