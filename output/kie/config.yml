@@ -3,7 +3,7 @@ Global:
   epoch_num: 60
   log_smooth_window: 20
   print_batch_step: 50
-  save_model_dir: ./output/kie_5/
+  save_model_dir: ./output/kie_1/
   save_epoch_step: 50
   eval_batch_step:
   - 0
@@ -26,7 +26,7 @@ Architecture:
   Transform: null
   Backbone:
     name: Kie_backbone
-    checkpoints: ./output/kie_5/best_accuracy
+    checkpoints: ./output/kie_1/best_accuracy
   Head:
     name: SDMGRHead
 Loss:
